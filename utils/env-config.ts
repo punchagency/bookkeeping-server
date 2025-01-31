@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import process from "process";
 import { container, singleton } from "tsyringe";
 
 dotenv.config();
