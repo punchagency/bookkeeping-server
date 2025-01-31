@@ -78,9 +78,9 @@ export default class Server {
   public async start() {
     this.handleGracefulShutdown();
     await connectToDatabase();
-    this._app.listen(this._envConfig.PORT, () => {
-      logger(`Server is running on port ${this._envConfig.PORT}`);
-    });
+
+    this._app.listen();
+    logger(`Server is running on port ${this._envConfig.PORT}`);
   }
 
   private async handleShutdown() {
