@@ -4,18 +4,22 @@ import { inject, injectable } from "tsyringe";
 import ApiResponse from "./../../application/response/response";
 import { IApiResponse } from "./../../application/response/i-response";
 import ConnectBankHandler from "./connect-bank/handler";
+import CurrentBankHandler from "./current/handler";
 
 @injectable()
 export default class BankController {
   private readonly _apiResponse: IApiResponse;
   private readonly _connectBankHandler: ConnectBankHandler;
+  private readonly _currentBankHandler: CurrentBankHandler;
 
   constructor(
     @inject(ApiResponse) ApiResponse: IApiResponse,
-    @inject(ConnectBankHandler) connectBankHandler: ConnectBankHandler
+    @inject(ConnectBankHandler) connectBankHandler: ConnectBankHandler,
+    @inject(CurrentBankHandler) currentBankHandler: CurrentBankHandler
   ) {
     this._apiResponse = ApiResponse;
     this._connectBankHandler = connectBankHandler;
+    this._currentBankHandler = currentBankHandler;
   }
 
   public async connectBank(req: Request, res: Response) {
@@ -38,5 +42,19 @@ export default class BankController {
 
   public async disconnectBank(req: Request, res: Response) {
     return this._apiResponse.Ok(res, "Bank disconnected successfully", {});
+  }
+
+  public async getCurrentBank(req: Request, res: Response) {
+    const result = await this._currentBankHandler.handle(req, res);
+
+    if (result.isFailure) {
+      return this._apiResponse.BadRequest(res, result.errors);
+    }
+
+    return this._apiResponse.Ok(
+      res,
+      "Current bank fetched successfully",
+      result.value
+    );
   }
 }
