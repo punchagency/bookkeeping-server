@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
+import { injectable, inject } from "tsyringe";
+import { logger } from "./../../../utils";
+import { Result } from "./../../../application/result";
 import { User } from "./../../../domain/entities/user";
 import MxClient from "./../../../infrastructure/config/packages/mx";
-import { Result } from "./../../../application/result";
-import { injectable, inject } from "tsyringe";
 
 @injectable()
 export default class CurrentBankHandler {
@@ -32,6 +33,8 @@ export default class CurrentBankHandler {
     if (membersResponse.status !== 200) {
       return Result.Fail([{ message: "Error fetching members from MX" }]);
     }
+
+    logger(membersResponse.data.members);
 
     const connectBanks = membersResponse.data.members.map((member) => {
       return {

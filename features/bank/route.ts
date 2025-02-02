@@ -32,5 +32,9 @@ export default class BankRoute {
     this.router.get("/current", [useAuth], (req, res) =>
       this._bankController.getCurrentBank(req, res)
     );
+
+    this.router.get("/transactions", [useAuth], (req, res) =>
+      this._bankController.getTransactions(req, res)
+    );
   }
 }
