@@ -28,5 +28,13 @@ export default class BankRoute {
     this.router.delete("/:id", (req, res) =>
       this._bankController.disconnectBank(req, res)
     );
+
+    this.router.get("/current", [useAuth], (req, res) =>
+      this._bankController.getCurrentBank(req, res)
+    );
+
+    this.router.get("/transactions", [useAuth], (req, res) =>
+      this._bankController.getTransactions(req, res)
+    );
   }
 }

@@ -1,15 +1,16 @@
 import "reflect-metadata";
 import bcrypt from "bcrypt";
 import { container } from "tsyringe";
-import { User } from "../../../../domain/entities/user";
-import { UserRepository } from "../../../repositories/user/user-repository";
 import {
   EnvConfiguration,
   logger,
   connectToDatabase,
   disconnectFromDatabase,
 } from "../../../../utils";
+import { User } from "../../../../domain/entities/user";
 import GlobalDIConfig from "../../../config/di/global-di-config";
+import { UserRepository } from "../../../repositories/user/user-repository";
+
 
 GlobalDIConfig.registerAllServices();
 
