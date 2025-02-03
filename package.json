@@ -23,7 +23,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "npm run build &&  DEBUG=mx-backend node ./dist/index.js",
+    "start": "DEBUG=mx-backend node ./dist/index.js",
     "dev": "DEBUG=mx-backend nodemon",
     "seed": "DEBUG=mx-backend ts-node ./infrastructure/persistence/seeders/user/index.ts"
   },
