@@ -21,8 +21,8 @@ export default class BankRoute {
       this._bankController.connectBank(req, res)
     );
 
-    this.router.get("/", (req, res) =>
-      this._bankController.getConnectedBanks(req, res)
+    this.router.delete("/disconnect", [useAuth], (req, res) =>
+      this._bankController.disconnectBank(req, res)
     );
 
     this.router.delete("/:id", (req, res) =>

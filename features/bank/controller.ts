@@ -6,24 +6,28 @@ import { IApiResponse } from "./../../application/response/i-response";
 import ConnectBankHandler from "./connect-bank/handler";
 import CurrentBankHandler from "./current/handler";
 import GetTransactionsHandler from "./get-transactions/handler";
+import DisconnectBankHandler from "./disconnect-bank/handler";
 
 @injectable()
 export default class BankController {
   private readonly _apiResponse: IApiResponse;
   private readonly _connectBankHandler: ConnectBankHandler;
   private readonly _currentBankHandler: CurrentBankHandler;
+  private readonly _disconnectBankHandler: DisconnectBankHandler;
   private readonly _getTransactionsHandler: GetTransactionsHandler;
 
   constructor(
     @inject(ApiResponse) ApiResponse: IApiResponse,
     @inject(ConnectBankHandler) connectBankHandler: ConnectBankHandler,
     @inject(CurrentBankHandler) currentBankHandler: CurrentBankHandler,
+    @inject(DisconnectBankHandler) disconnectBankHandler: DisconnectBankHandler,
     @inject(GetTransactionsHandler)
     getTransactionsHandler: GetTransactionsHandler
   ) {
     this._apiResponse = ApiResponse;
     this._connectBankHandler = connectBankHandler;
     this._currentBankHandler = currentBankHandler;
+    this._disconnectBankHandler = disconnectBankHandler;
     this._getTransactionsHandler = getTransactionsHandler;
   }
 
@@ -41,12 +45,18 @@ export default class BankController {
     );
   }
 
-  public async getConnectedBanks(req: Request, res: Response) {
-    return this._apiResponse.Ok(res, "Banks fetched successfully", {});
-  }
-
   public async disconnectBank(req: Request, res: Response) {
-    return this._apiResponse.Ok(res, "Bank disconnected successfully", {});
+    const result = await this._disconnectBankHandler.handle(req, res);
+
+    if (result.isFailure) {
+      return this._apiResponse.BadRequest(res, result.errors);
+    }
+
+    return this._apiResponse.Ok(
+      res,
+      "Bank disconnected successfully",
+      result.value
+    );
   }
 
   public async getCurrentBank(req: Request, res: Response) {

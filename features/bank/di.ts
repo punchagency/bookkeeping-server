@@ -5,6 +5,7 @@ import BankController from "./controller";
 import CurrentBankHandler from "./current/handler";
 import ConnectBankService from "./connect-bank/service";
 import ConnectBankHandler from "./connect-bank/handler";
+import DisconnectBankHandler from "./disconnect-bank/handler";
 import GetTransactionsHandler from "./get-transactions/handler";
 
 export const registerBankDi = () => {
@@ -30,5 +31,9 @@ export const registerBankDi = () => {
 
   container.register(GetTransactionsHandler.name, {
     useClass: GetTransactionsHandler,
+  });
+
+  container.register(DisconnectBankHandler.name, {
+    useClass: DisconnectBankHandler,
   });
 };
