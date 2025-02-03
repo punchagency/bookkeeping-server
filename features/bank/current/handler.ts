@@ -30,22 +30,24 @@ export default class CurrentBankHandler {
 
     const membersResponse = await this._mxClient.client.listMembers(mxUserId);
 
-    if (membersResponse.status !== 200) {
-      return Result.Fail([{ message: "Error fetching members from MX" }]);
+    try {
+      logger(membersResponse.data.members);
+
+      const connectBanks = membersResponse.data.members.map((member) => {
+        return {
+          guid: member.guid,
+          institutionCode: member.institution_code,
+          name: member.name,
+          connectionStatus: member.connection_status,
+          lastSuccessfulUpdate: member.successfully_aggregated_at,
+        };
+      });
+
+      return Result.Ok(connectBanks);
+    } catch (error: any) {
+      return Result.Fail([
+        { message: `Error fetching members from MX: ${error.message}` },
+      ]);
     }
-
-    logger(membersResponse.data.members);
-
-    const connectBanks = membersResponse.data.members.map((member) => {
-      return {
-        guid: member.guid,
-        institutionCode: member.institution_code,
-        name: member.name,
-        connectionStatus: member.connection_status,
-        lastSuccessfulUpdate: member.successfully_aggregated_at,
-      };
-    });
-
-    return Result.Ok(connectBanks);
   }
 }
