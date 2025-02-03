@@ -3,7 +3,6 @@
   "description": "Mx project backend api",
   "main": "./dist/index.js",
   "devDependencies": {
-    "@typegoose/typegoose": "^12.10.1",
     "@types/bcrypt": "^5.0.2",
     "@types/bun": "latest",
     "@types/cookie-parser": "^1.4.8",
@@ -27,6 +26,7 @@
     "seed": "DEBUG=mx-backend ts-node ./infrastructure/persistence/seeders/user/index.ts"
   },
   "dependencies": {
+    "@typegoose/typegoose": "^12.10.1",
     "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
