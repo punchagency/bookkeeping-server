@@ -1,4 +1,8 @@
-const allowedOrigins = ["http://localhost:4000", "htpp://localhost:3000"];
+const allowedOrigins = [
+  "http://localhost:4000",
+  "htpp://localhost:3000",
+  "https://punch-bookkeeping-server-173bdf3f1a50.herokuapp.com/",
+]; ;
 
 const corsOptions = {
   origin: (origin: any, callback: any) => {
