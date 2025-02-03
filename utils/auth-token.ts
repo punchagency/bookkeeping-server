@@ -48,7 +48,7 @@ export class AuthTokenUtils {
     res.cookie("refreshToken", token, {
       httpOnly: true,
       secure: this._envConfig.IS_PRODUCTION,
-      sameSite: "lax",
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
   }
