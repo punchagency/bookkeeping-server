@@ -71,6 +71,7 @@ export default class LoginHandler {
 
       return Result.Ok<ILoginResponse>({
         accessToken,
+        refreshToken,
         user: {
           _id: user._id,
           email: user.email,
