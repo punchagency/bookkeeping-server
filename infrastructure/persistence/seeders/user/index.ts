@@ -10,7 +10,8 @@ import {
 import { User } from "../../../../domain/entities/user";
 import GlobalDIConfig from "../../../config/di/global-di-config";
 import { UserRepository } from "../../../repositories/user/user-repository";
-
+import dotenv from "dotenv";
+dotenv.config();
 
 GlobalDIConfig.registerAllServices();
 
@@ -21,6 +22,12 @@ export const seedDeveloperUser = async () => {
 
     const seededAccountEmail = envConfig.SEEDED_ACCOUNT_EMAIL;
     const seededAccountPassword = envConfig.SEEDED_ACCOUNT_PASSWORD;
+
+    if (!seededAccountEmail || !seededAccountPassword) {
+      throw new Error(
+        "Seeded account email or password is not defined in the environment variables."
+      );
+    }
 
     const existingUser = await userRepository.findByEmail(seededAccountEmail);
 
