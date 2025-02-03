@@ -1,26 +1,17 @@
 const allowedOrigins = [
-  "http://localhost:4000",
-  "htpp://localhost:3000",
-  "https://punch-bookkeeping.vercel.app",
-]; ;
+  'http://localhost:3000',
+  'https://your-production-frontend-url.com', // Add your production URL
+];
 
-const corsOptions = {
-  origin: (origin: any, callback: any) => {
-    const allowedOriginPatterns = allowedOrigins.map(
-      (origin) =>
-        new RegExp(`^${origin.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`)
-    );
-
-    if (
-      !origin ||
-      allowedOriginPatterns.some((pattern) => pattern.test(origin))
-    ) {
+export const corsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"));
+      callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
-
-export default corsOptions;

@@ -19,9 +19,7 @@ export default class MxClient {
       username: this._envConfiguration.MX_CLIENT_ID,
       password: this._envConfiguration.MX_API_KEY,
 
-      basePath: this._envConfiguration.IS_PRODUCTION
-        ? this._mxProductionApiUrl
-        : this._mxDevelopmentApiUrl,
+      basePath: this._mxDevelopmentApiUrl,
 
       baseOptions: {
         headers: {
