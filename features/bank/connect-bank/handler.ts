@@ -4,7 +4,6 @@ import { Result } from "./../../../application/result";
 import MxClient from "./../../../infrastructure/config/packages/mx";
 import { logger } from "./../../../utils";
 import { User } from "./../../../domain/entities/user";
-import { Types } from "mongoose";
 
 @injectable()
 export default class ConnectBankHandler {

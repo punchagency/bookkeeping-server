@@ -21,13 +21,13 @@ class User {
 
   @prop({ type: () => [Object], default: [] })
   public mxUsers: Array<{
-    mxUserId: string;
-    email: string;
     id: string;
+    mxUserId: string;
+    memberId?: string;
+    email: string;
     isDisabled: boolean;
     metadata?: Record<string, any>;
     createdAt: Date;
-    
   }>;
 }
 
