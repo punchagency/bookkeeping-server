@@ -22,7 +22,7 @@ export class AuthTokenUtils {
       },
       this._envConfig.JWT_SECRET,
       {
-        expiresIn: "1h",
+        expiresIn: "7d",
         issuer: this._envConfig.JWT_ISSUER,
         audience: this._envConfig.JWT_AUDIENCE,
       }
@@ -48,7 +48,7 @@ export class AuthTokenUtils {
     res.cookie("refreshToken", token, {
       httpOnly: true,
       secure: this._envConfig.IS_PRODUCTION,
-      sameSite: "strict",
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
   }
