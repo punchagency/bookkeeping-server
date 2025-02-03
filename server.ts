@@ -7,7 +7,6 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import { inject, injectable } from "tsyringe";
 
-import corsOptions from "./utils/cors-options";
 import BaseRoute from "./features/base/route";
 import AuthRoute from "./features/auth/route";
 import BankRoute from "./features/bank/route";
@@ -15,6 +14,7 @@ import MxUserRoute from "./features/mx-user/route";
 
 import {
   logger,
+  corsOptions,
   EnvConfiguration,
   connectToDatabase,
   disconnectFromDatabase,
