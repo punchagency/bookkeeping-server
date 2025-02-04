@@ -2,19 +2,15 @@ import { Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
 import axios from "axios";
 import { EnvConfiguration } from "./../../../utils";
-import OpenAiClient from "./../../../infrastructure/config/packages/openai";
-import { Result } from "application/result";
+import { Result } from "./../../../application/result";
 
 @injectable()
 export default class SessionHandler {
-  private readonly _openAiClient: OpenAiClient;
   private readonly _envConfiguration: EnvConfiguration;
 
   constructor(
-    @inject(OpenAiClient.name) openAiClient: OpenAiClient,
     @inject(EnvConfiguration.name) envConfiguration: EnvConfiguration
   ) {
-    this._openAiClient = openAiClient;
     this._envConfiguration = envConfiguration;
   }
 
@@ -31,14 +27,13 @@ export default class SessionHandler {
     const response = await axios.post(
       "https://api.openai.com/v1/realtime/sessions",
       {
+        model: "gpt-4o-realtime-preview-2024-12-17",
+        voice: "verse",
+      },
+      {
         headers: {
           Authorization: `Bearer ${this._envConfiguration.OPENAI_API_KEY}`,
           "Content-Type": "application/json",
-        },
-
-        body: {
-          model: "gpt-4o-realtime-preview-2024-12-17",
-          voice: "verse",
         },
       }
     );

@@ -6,7 +6,6 @@ import { logger } from "./../../../utils";
 import { User } from "./../../../domain/entities/user";
 import MxClient from "./../../../infrastructure/config/packages/mx";
 import { Result } from "./../../../application/result";
-import { formatDiagnosticsWithColorAndContext } from "typescript";
 
 @injectable()
 export default class DisconnectBankHandler {

@@ -10,6 +10,7 @@ import { inject, injectable } from "tsyringe";
 import BaseRoute from "./features/base/route";
 import AuthRoute from "./features/auth/route";
 import BankRoute from "./features/bank/route";
+import AiRoute from "./features/ai/route";
 import MxUserRoute from "./features/mx-user/route";
 
 import {
@@ -33,14 +34,18 @@ export default class Server {
   private readonly _bankRoute: BankRoute;
   private readonly _mxUserRoute: MxUserRoute;
 
+  private readonly _aiRoute: AiRoute; 
+
   constructor(
     @inject(BaseRoute.name) baseRoute: BaseRoute,
     @inject(AuthRoute.name) authRoute: AuthRoute,
     @inject(BankRoute.name) bankRoute: BankRoute,
     @inject(MxUserRoute.name) mxUserRoute: MxUserRoute,
+    @inject(AiRoute.name) aiRoute: AiRoute,
     @inject(EnvConfiguration.name) envConfiguration: EnvConfiguration
   ) {
     dotenv.config();
+    this._aiRoute = aiRoute;
     this._baseRoute = baseRoute;
     this._authRoute = authRoute;
     this._bankRoute = bankRoute;
@@ -68,6 +73,7 @@ export default class Server {
     this._app.use(`${this._apiVersion}/auth`, this._authRoute.router);
     this._app.use(`${this._apiVersion}/bank`, this._bankRoute.router);
     this._app.use(`${this._apiVersion}/mx-user`, this._mxUserRoute.router);
+    this._app.use(`${this._apiVersion}/ai`, this._aiRoute.router);
   }
 
   private setupErrorHandling() {
