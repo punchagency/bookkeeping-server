@@ -8,6 +8,7 @@ import { registerAuthTokenUtilsDi } from "../../../utils/auth-token";
 import { registerUserRepositoryDi } from "../../repositories/user/di";
 import { registerTokenRepositoryDi } from "../../repositories/token/di";
 import { registerApiResponseDi } from "../../../application/response/di";
+import { registerTransactionRepositoryDi } from "../../repositories/transaction/di";
 
 export default class GlobalDIConfig {
   public static registerAllServices() {
@@ -21,5 +22,6 @@ export default class GlobalDIConfig {
     registerTokenRepositoryDi();
     registerUserRepositoryDi();
     registerAuthTokenUtilsDi();
+    registerTransactionRepositoryDi();
   }
 }
