@@ -15,7 +15,8 @@ export class EnvConfiguration {
   public readonly MX_API_KEY = process.env.MX_API_KEY;
   public readonly MONGODB_URL = process.env.MONGODB_URL;
   public readonly SEEDED_ACCOUNT_EMAIL = process.env.SEEDED_ACCOUNT_EMAIL;
-  public readonly SEEDED_ACCOUNT_PASSWORD = process.env.SEEDED_ACCOUNT_PASSWORD;      
+  public readonly SEEDED_ACCOUNT_PASSWORD = process.env.SEEDED_ACCOUNT_PASSWORD;
+  public readonly OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 }
 
 export const registerEnvConfigDi = () => {
