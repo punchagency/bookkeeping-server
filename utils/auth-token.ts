@@ -22,7 +22,7 @@ export class AuthTokenUtils {
       },
       this._envConfig.JWT_SECRET,
       {
-        expiresIn: "7d",
+        expiresIn: "1h",
         issuer: this._envConfig.JWT_ISSUER,
         audience: this._envConfig.JWT_AUDIENCE,
       }
