@@ -1,5 +1,7 @@
+import { Types } from "mongoose";
 import { IRepository } from "../i-repository";
 import { Transaction } from "./../../../domain/entities/transactions";
-import { Types } from "mongoose";
 
-export interface ITransactionRepository extends IRepository<Transaction> {}
+export interface ITransactionRepository extends IRepository<Transaction> {
+    insertMany(transactions: Transaction[]): Promise<void>;
+}
