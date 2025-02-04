@@ -41,6 +41,7 @@
     "mongoose": "^8.9.5",
     "morgan": "^1.10.0",
     "mx-platform-node": "^1.1.0",
+    "openai": "^4.82.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.2",
