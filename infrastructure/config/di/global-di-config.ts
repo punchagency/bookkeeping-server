@@ -1,4 +1,5 @@
 import { registerMxClientDi } from "../packages/mx/di";
+import { registerAiDi } from "../../../features/ai/di";
 import { registerBaseDi } from "../../../features/base/di";
 import { registerAuthDi } from "../../../features/auth/di";
 import { registerBankDi } from "../../../features/bank/di";
@@ -25,5 +26,6 @@ export default class GlobalDIConfig {
     registerAuthTokenUtilsDi();
     registerTransactionRepositoryDi();
     registerOpenAiClientDi();
+    registerAiDi();
   }
 }
