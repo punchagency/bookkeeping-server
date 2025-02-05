@@ -38,6 +38,34 @@ export default class GetTransactionsHandler {
     const mxUserId = currentUser.mxUsers[0].mxUserId;
     const { perPage, currentPage } = values;
 
+    // Get all transactions from MX for totals calculation
+    const allTransactionsResponse =
+      await this._mxClient.client.listTransactions(
+        mxUserId,
+        undefined,
+        1,
+        1000 // Get a large number of transactions for accurate totals
+      );
+
+    // Calculate totals from all MX transactions
+    const totals = allTransactionsResponse.data.transactions.reduce(
+      (acc, t) => {
+        if (t.is_income) acc.totalIncome += t.amount;
+        if (t.is_expense) acc.totalExpenses += t.amount;
+        acc.netChange += t.is_income ? t.amount : -t.amount;
+        return acc;
+      },
+      { totalIncome: 0, totalExpenses: 0, netChange: 0 }
+    );
+
+    // Format totals to 2 decimal places
+    const formattedTotals = {
+      income: Number(totals.totalIncome.toFixed(2)),
+      expenses: Number(totals.totalExpenses.toFixed(2)),
+      netChange: Number(totals.netChange.toFixed(2)),
+    };
+
+    // Get paginated transactions for display
     const transactionsResponse = await this._mxClient.client.listTransactions(
       mxUserId,
       undefined,
@@ -48,6 +76,10 @@ export default class GetTransactionsHandler {
     if (transactionsResponse.status !== 200) {
       return Result.Fail([{ message: "Error fetching transactions from MX" }]);
     }
+
+    logger(
+      `${transactionsResponse.data.transactions.length} transactions fetched`
+    );
 
     const transactions = transactionsResponse.data.transactions;
 
@@ -89,6 +121,11 @@ export default class GetTransactionsHandler {
         perPage: transactionsResponse.data.pagination.per_page,
         totalEntries: transactionsResponse.data.pagination.total_entries,
         totalPages: transactionsResponse.data.pagination.total_pages,
+      },
+      totals: {
+        income: formattedTotals.income,
+        expenses: formattedTotals.expenses,
+        netChange: formattedTotals.netChange,
       },
     };
 
