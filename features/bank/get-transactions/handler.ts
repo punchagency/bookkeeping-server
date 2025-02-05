@@ -44,10 +44,9 @@ export default class GetTransactionsHandler {
         mxUserId,
         undefined,
         1,
-        1000 // Get a large number of transactions for accurate totals
+        1000
       );
 
-    // Calculate totals from all MX transactions
     const totals = allTransactionsResponse.data.transactions.reduce(
       (acc, t) => {
         if (t.is_income) acc.totalIncome += t.amount;
@@ -58,14 +57,12 @@ export default class GetTransactionsHandler {
       { totalIncome: 0, totalExpenses: 0, netChange: 0 }
     );
 
-    // Format totals to 2 decimal places
     const formattedTotals = {
       income: Number(totals.totalIncome.toFixed(2)),
       expenses: Number(totals.totalExpenses.toFixed(2)),
       netChange: Number(totals.netChange.toFixed(2)),
     };
 
-    // Get paginated transactions for display
     const transactionsResponse = await this._mxClient.client.listTransactions(
       mxUserId,
       undefined,

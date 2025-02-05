@@ -17,8 +17,18 @@ export class Repository<T> implements IRepository<T> {
     return await this.model.findById(id).exec();
   }
 
-  async findAll(): Promise<T[]> {
-    return await this.model.find().exec();
+  async findAll(
+    filter = {},
+    options: { limit?: number; sort?: { [key: string]: 1 | -1 } } = {}
+  ): Promise<T[]> {
+    try {
+      const query = this.model.find(filter);
+      if (options.sort) query.sort(options.sort);
+      if (options.limit) query.limit(options.limit);
+      return await query.exec();
+    } catch (error) {
+      throw error;
+    }
   }
 
   async update(id: Types.ObjectId, item: Partial<T>): Promise<T | null> {

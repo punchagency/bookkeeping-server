@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
 import axios from "axios";
-import { EnvConfiguration } from "./../../../utils";
+import { EnvConfiguration, logger } from "./../../../utils";
 import { Result } from "./../../../application/result";
 import { TransactionRepository } from "../../../infrastructure/repositories/transaction/transaction-repository";
 
@@ -31,27 +31,242 @@ export default class SessionHandler {
     try {
       const transactions = await this._transactionRepository.findAll();
 
-      const formattedTransactions = transactions.map((t) => ({
-        amount: t.amount,
-        description: t.description,
-        date: t.date,
-        category: t.category,
-        type: t.type,
-        isExpense: t.isExpense,
-        isIncome: t.isIncome,
-      }));
+      const overallTotals = transactions.reduce(
+        (acc, t) => {
+          if (t.isIncome) acc.totalIncome += t.amount;
+          if (t.isExpense) acc.totalExpenses += t.amount;
+          acc.netChange += t.isIncome ? t.amount : -t.amount;
+          acc.categories[t.topLevelCategory] =
+            (acc.categories[t.topLevelCategory] || 0) + t.amount;
+          acc.merchantFrequency[t.description] =
+            (acc.merchantFrequency[t.description] || 0) + 1;
+          if (t.amount > (acc.highestTransaction?.amount || 0)) {
+            acc.highestTransaction = {
+              amount: t.amount,
+              description: t.description,
+              category: t.topLevelCategory,
+            };
+          }
+          return acc;
+        },
+        {
+          totalIncome: 0,
+          totalExpenses: 0,
+          netChange: 0,
+          categories: {},
+          merchantFrequency: {},
+          highestTransaction: null,
+        }
+      );
+
+      const spendingTrends = transactions.reduce(
+        (acc, t) => {
+          const date = new Date(t.date);
+          const dayOfWeek = date.toLocaleString("en-US", { weekday: "long" });
+
+          if (t.isExpense) {
+            acc.byDayOfWeek[dayOfWeek] =
+              (acc.byDayOfWeek[dayOfWeek] || 0) + t.amount;
+
+            if (t.amount >= 100) {
+              acc.largeTransactions.push({
+                date: t.date,
+                amount: t.amount,
+                description: t.description,
+                category: t.topLevelCategory,
+              });
+            }
+          }
+          return acc;
+        },
+        { byDayOfWeek: {}, largeTransactions: [] }
+      );
+
+      const formattedTotals = {
+        income: Number(overallTotals.totalIncome.toFixed(2)),
+        expenses: Number(overallTotals.totalExpenses.toFixed(2)),
+        netChange: Number(overallTotals.netChange.toFixed(2)),
+      };
+
+      const transactionSummary = transactions.reduce((summary, t) => {
+        const month = new Date(t.date).toLocaleString("default", {
+          month: "long",
+        });
+        if (!summary[month]) {
+          summary[month] = {
+            income: 0,
+            expenses: 0,
+            transactions: [],
+            topCategories: new Map(),
+            categoryTotals: new Map(),
+            merchantTotals: new Map(),
+            recurringExpenses: new Map(),
+            largestExpenses: [],
+          };
+        }
+
+        if (t.isIncome) summary[month].income += t.amount;
+        if (t.isExpense) summary[month].expenses += t.amount;
+
+        const descriptionKey = t.description.toLowerCase().trim();
+        const merchantTotal =
+          summary[month].merchantTotals.get(descriptionKey) || 0;
+        summary[month].merchantTotals.set(
+          descriptionKey,
+          merchantTotal + t.amount
+        );
+
+        const categoryTotal =
+          summary[month].categoryTotals.get(t.topLevelCategory) || 0;
+        summary[month].categoryTotals.set(
+          t.topLevelCategory,
+          categoryTotal + t.amount
+        );
+
+        const currentCount =
+          summary[month].topCategories.get(t.topLevelCategory) || 0;
+        summary[month].topCategories.set(t.topLevelCategory, currentCount + 1);
+
+        if (t.isExpense) {
+          summary[month].transactions.push({
+            description: t.description,
+            originalDescription: t.originalDescription,
+            amount: t.amount,
+            category: t.topLevelCategory,
+            date: t.date,
+          });
+
+          if (
+            summary[month].transactions.some(
+              (tr) =>
+                tr.description !== t.description &&
+                tr.description.toLowerCase().includes(descriptionKey)
+            )
+          ) {
+            summary[month].recurringExpenses.set(descriptionKey, {
+              amount: t.amount,
+              category: t.topLevelCategory,
+              frequency: "monthly",
+            });
+          }
+        }
+
+        return summary;
+      }, {});
+
+      logger(transactionSummary);
 
       const systemPrompt = `
         You are a highly specialized financial assistant designed to analyze and respond exclusively to queries related to personal finance, transactions, budgeting, investments, expenses, savings, and other financial matters.
         
-        Here are the user's recent transactions:
-        ${JSON.stringify(formattedTransactions)}
+        Overall Financial Summary:
+        - Total Income (All Time): $${formattedTotals.income}
+        - Total Expenses (All Time): $${formattedTotals.expenses}
+        - Net Change (All Time): $${formattedTotals.netChange}
         
-        Your responses must always remain within the financial domain, even if the user tries to divert the conversation to unrelated topics. If a user asks about something non-financial, politely redirect them back to financial-related subjects.
+        Spending Analysis:
+        - Highest Single Transaction: $${overallTotals.highestTransaction?.amount.toFixed(
+          2
+        )} (${overallTotals.highestTransaction?.description})
+        - Most Frequent Transactions: ${Object.entries(
+          overallTotals.merchantFrequency
+        )
+          .sort((a, b) => Number(b[1]) - Number(a[1]))
+          .slice(0, 5)
+          .map(([desc, count]) => `${desc} (${count} times)`)
+          .join(", ")}
+        Spending by Day of Week:
+        ${Object.entries(spendingTrends.byDayOfWeek)
+          .sort((a, b) => Number(b[1]) - Number(a[1]))
+          .map(([day, amount]) => `- ${day}: $${Number(amount).toFixed(2)}`)
+          .join("\n")}
         
-        Be concise, clear, and professional, focusing on helping the user make informed financial decisions. Use the transaction data effectively to provide personalized advice when appropriate.
+        Category Distribution:
+        ${Object.entries(overallTotals.categories)
+          .sort((a, b) => Number(b[1]) - Number(a[1]))
+          .map(
+            ([category, amount]) =>
+              `- ${category}: $${Number(amount).toFixed(2)} (${(
+                (Number(amount) / formattedTotals.expenses) *
+                100
+              ).toFixed(1)}% of expenses)`
+          )
+          .join("\n")}
         
-        Remember: Do not engage in discussions outside of financial topics under any circumstances.
+        Recent Large Transactions (>=$100):
+        ${spendingTrends.largeTransactions
+          .sort(
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+          )
+          .slice(0, 10)
+          .map(
+            (t) =>
+              `- ${new Date(t.date).toLocaleDateString()}: ${
+                t.description
+              } - $${t.amount.toFixed(2)}`
+          )
+          .join("\n")}
+
+        Monthly Breakdown:
+        ${Object.entries(transactionSummary)
+          .map(
+            ([month, data]) => `
+          ${month}:
+          - Total Income: $${(data as any).income.toFixed(2)}
+          - Total Expenses: $${(data as any).expenses.toFixed(2)}
+          - Net Change: $${(
+            Number((data as any).income) - Number((data as any).expenses)
+          ).toFixed(2)}
+          
+          Category Breakdown:
+          ${Array.from((data as any).categoryTotals)
+            .sort((a, b) => b[1] - a[1])
+            .map(
+              ([category, total]) =>
+                `  • ${category}: $${Number(total).toFixed(2)}`
+            )
+            .join("\n")}
+          
+          Top Merchants/Services by Spend:
+          ${Array.from((data as any).merchantTotals)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 8)
+            .map(([merchant, total]) => `  • ${merchant}: $${total.toFixed(2)}`)
+            .join("\n")}
+          
+          Potential Recurring Expenses:
+          ${Array.from((data as any).recurringExpenses)
+            .map(
+              ([desc, info]) =>
+                `  • ${desc}: $${info.amount.toFixed(2)} (${info.category})`
+            )
+            .join("\n")}
+          
+          Notable Transactions:
+          ${(data as any).transactions
+            .sort((a, b) => b.amount - a.amount)
+            .slice(0, 5)
+            .map(
+              (t) =>
+                `  • ${t.description} (${t.category}): $${t.amount.toFixed(
+                  2
+                )}\n    Original Description: ${t.originalDescription}`
+            )
+            .join("\n")}
+        `
+          )
+          .join("\n\n")}
+        
+        Based on this comprehensive financial data:
+        1. Analyze overall financial health and spending patterns
+        2. Identify days of the week with highest spending
+        3. Highlight categories that might need attention based on their percentage of total expenses
+        4. Point out frequent transactions that might be optimized
+        5. Suggest specific areas for potential savings
+        6. Compare spending patterns across different time periods
+        7. Identify any concerning trends or positive financial behaviors
+        
+        Your responses must always remain within the financial domain, even if the user tries to divert the conversation to unrelated topics.
       `.trim();
 
       const response = await axios.post(
