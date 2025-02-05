@@ -31,11 +31,21 @@ export default class SessionHandler {
     try {
       const transactions = await this._transactionRepository.findAll();
 
+      const formattedTransactions = transactions.map((t) => ({
+        amount: t.amount,
+        description: t.description,
+        date: t.date,
+        category: t.category,
+        type: t.type,
+        isExpense: t.isExpense,
+        isIncome: t.isIncome,
+      }));
+
       const systemPrompt = `
         You are a highly specialized financial assistant designed to analyze and respond exclusively to queries related to personal finance, transactions, budgeting, investments, expenses, savings, and other financial matters.
         
         Here are the user's recent transactions:
-        ${JSON.stringify(transactions)}
+        ${JSON.stringify(formattedTransactions)}
         
         Your responses must always remain within the financial domain, even if the user tries to divert the conversation to unrelated topics. If a user asks about something non-financial, politely redirect them back to financial-related subjects.
         
