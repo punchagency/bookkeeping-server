@@ -31,42 +31,39 @@ export default class GetStatementsHandler {
   private async getStatements(user: User, pageOptions: IPageOptions) {
     const mxUserId = user.mxUsers.find(
       (mxUser) => mxUser.id === user._id?.toString()
-    ).mxUserId;
-
+    )?.mxUserId;
+    if (!mxUserId) {
+      return Result.Fail([{ message: "MX User ID not found" }]);
+    }
     const mxUserMember = await this._mxClient.client.listMembers(mxUserId);
 
-    /**
-     * For now we can just get the first member. As this is a proof of concept.
-     */
-    const mxUserMemberGuid = mxUserMember.data.members[0].guid;
+    console.log("====================================");
+    console.log("MX User Member:", mxUserMember.data);
+    console.log("====================================");
 
-    const statementsResponse =
-      await this._mxClient.client.listStatementsByMember(
-        mxUserMemberGuid,
-        mxUserId,
-        pageOptions.page,
-        pageOptions.recordsPerPage
-      );
-
-    if (statementsResponse.status !== 200) {
-      return Result.Fail([{ message: "Error getting statements from MX" }]);
+    const mxUserMemberGuid = mxUserMember.data.members[0]?.guid;
+    if (!mxUserMemberGuid) {
+      return Result.Fail([{ message: "MX User Member GUID not found" }]);
     }
-
-    logger(statementsResponse.data);
-
-    let testStatement = {
-      account_guid: "ACT-06d7f44b-caae-0f6e-1384-01f52e75dcb1",
-      content_hash:
-        "ca53785b812d00ef821c3d94bfd6e5bbc0020504410589b7ea8552169f021981",
-      created_at: "2016-10-13T18:08:00+00:00",
-      guid: "STA-737a344b-caae-0f6e-1384-01f52e75dcb1",
-      member_guid: "MBR-7c6f361b-e582-15b6-60c0-358f12466b4b",
-      updated_at: "2016-10-13T18:09:00+00:00",
-      uri: "uri/to/statement",
-      user_guid: "USR-fa7537f3-48aa-a683-a02a-b18940482f54",
-    };
-
-    statementsResponse.data.statements.push(testStatement);
-    return Result.Ok(statementsResponse.data);
+    console.log("====================================");
+    console.log("MX User Member GUID:", mxUserMemberGuid);
+    console.log("====================================");
+    try {
+      const statementsResponse = await this._mxClient.client.fetchStatements(
+        "MBR-b8809a41-3699-4a0e-adea-4ed6815f0677",
+        "USR-747e3e72-5eee-4fe5-b06f-11af9f4c11ac"
+      );
+      console.log("====================================");
+      console.log("Statements Response:", statementsResponse);
+      console.log("====================================");
+      if (statementsResponse.status !== 200) {
+        return Result.Fail([{ message: "Error getting statements from MX" }]);
+      }
+      logger(statementsResponse.data);
+      return Result.Ok(statementsResponse.data);
+    } catch (error) {
+      console.error("Error fetching statements:");
+      return Result.Fail([{ message: "Error fetching statements" }]);
+    }
   }
 }

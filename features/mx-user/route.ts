@@ -31,7 +31,7 @@ export default class MxUserRoute {
       this._mxUserController.getAllUsers(req, res)
     );
 
-    this.router.get("/statements", [useAuth], (req, res) =>
+    this.router.post("/statements", [useAuth], (req, res) =>
       this._mxUserController.getStatements(req, res)
     );
   }
