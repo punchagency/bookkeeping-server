@@ -3,19 +3,20 @@ import { inject, injectable } from "tsyringe";
 import axios from "axios";
 import { EnvConfiguration, logger } from "./../../../utils";
 import { Result } from "./../../../application/result";
-import { TransactionRepository } from "../../../infrastructure/repositories/transaction/transaction-repository";
+import MxClient from "./../../../infrastructure/config/packages/mx";
+import { User } from "./../../../domain/entities/user";
 
 @injectable()
 export default class SessionHandler {
   private readonly _envConfiguration: EnvConfiguration;
-  private readonly _transactionRepository: TransactionRepository;
+  private readonly _mxClient: MxClient;
 
   constructor(
     @inject(EnvConfiguration.name) envConfiguration: EnvConfiguration,
-    @inject(TransactionRepository) transactionRepository: TransactionRepository
+    @inject(MxClient) mxClient: MxClient
   ) {
+    this._mxClient = mxClient;
     this._envConfiguration = envConfiguration;
-    this._transactionRepository = transactionRepository;
   }
 
   public async handle(req: Request, res: Response) {
@@ -29,21 +30,46 @@ export default class SessionHandler {
 
   private async createSession(req: Request) {
     try {
-      const transactions = await this._transactionRepository.findAll();
+      const currentUser = req.user as User;
+      const mxUserId = currentUser.mxUsers[0].mxUserId;
 
-      const totals = transactions.reduce(
+      const countResponse = await this._mxClient.client.listTransactions(
+        mxUserId,
+        undefined,
+        1,
+        1
+      );
+
+      const totalTransactions = countResponse.data.pagination.total_entries;
+      const totalPages = Math.ceil(totalTransactions / 1000);
+
+      let allTransactions: any[] = [];
+      for (let page = 1; page <= totalPages; page++) {
+        const batchResponse = await this._mxClient.client.listTransactions(
+          mxUserId,
+          undefined,
+          page,
+          1000
+        );
+        allTransactions = [
+          ...allTransactions,
+          ...batchResponse.data.transactions,
+        ];
+      }
+
+      const totals = allTransactions.reduce(
         (acc, t) => {
-          if (t.isIncome) acc.totalIncome += Number(t.amount);
-          if (t.isExpense) acc.totalExpenses += Number(t.amount);
-          acc.categories[t.topLevelCategory] =
-            (acc.categories[t.topLevelCategory] || 0) + t.amount;
+          if (t.is_income) acc.totalIncome += Number(t.amount);
+          if (t.is_expense) acc.totalExpenses += Number(t.amount);
+          acc.categories[t.top_level_category] =
+            (acc.categories[t.top_level_category] || 0) + t.amount;
           acc.merchantFrequency[t.description] =
             (acc.merchantFrequency[t.description] || 0) + 1;
           if (t.amount > (acc.highestTransaction?.amount || 0)) {
             acc.highestTransaction = {
               amount: t.amount,
               description: t.description,
-              category: t.topLevelCategory,
+              category: t.top_level_category,
             };
           }
           return acc;
@@ -64,7 +90,18 @@ export default class SessionHandler {
         netChange: Number(totals.totalIncome - totals.totalExpenses),
       };
 
-      const spendingTrends = transactions.reduce(
+      const transformedTransactions = allTransactions.map((t) => ({
+        isIncome: t.is_income,
+        isExpense: t.is_expense,
+        amount: Number(t.amount),
+        description: t.description,
+        originalDescription: t.original_description,
+        topLevelCategory: t.top_level_category,
+        date: t.date,
+        memo: t.memo,
+      }));
+
+      const spendingTrends = transformedTransactions.reduce(
         (acc, t) => {
           const date = new Date(t.date);
           const dayOfWeek = date.toLocaleString("en-US", { weekday: "long" });
@@ -100,71 +137,77 @@ export default class SessionHandler {
         { byDayOfWeek: {}, largeTransactions: [], monthlySpending: {} }
       );
 
-      const transactionSummary = transactions.reduce((summary, t) => {
-        const month = new Date(t.date).toLocaleString("default", {
-          month: "long",
-        });
-        if (!summary[month]) {
-          summary[month] = {
-            income: 0,
-            expenses: 0,
-            transactions: [],
-            topCategories: new Map(),
-            categoryTotals: new Map(),
-            merchantTotals: new Map(),
-            recurringExpenses: new Map(),
-            largestExpenses: [],
-          };
-        }
-
-        if (t.isIncome) summary[month].income += t.amount;
-        if (t.isExpense) summary[month].expenses += t.amount;
-
-        const descriptionKey = t.description.toLowerCase().trim();
-        const merchantTotal =
-          summary[month].merchantTotals.get(descriptionKey) || 0;
-        summary[month].merchantTotals.set(
-          descriptionKey,
-          merchantTotal + t.amount
-        );
-
-        const categoryTotal =
-          summary[month].categoryTotals.get(t.topLevelCategory) || 0;
-        summary[month].categoryTotals.set(
-          t.topLevelCategory,
-          categoryTotal + t.amount
-        );
-
-        const currentCount =
-          summary[month].topCategories.get(t.topLevelCategory) || 0;
-        summary[month].topCategories.set(t.topLevelCategory, currentCount + 1);
-
-        if (t.isExpense) {
-          summary[month].transactions.push({
-            description: t.description,
-            originalDescription: t.originalDescription,
-            amount: t.amount,
-            category: t.topLevelCategory,
-            date: t.date,
+      const transactionSummary = transformedTransactions.reduce(
+        (summary, t) => {
+          const month = new Date(t.date).toLocaleString("default", {
+            month: "long",
           });
+          if (!summary[month]) {
+            summary[month] = {
+              income: 0,
+              expenses: 0,
+              transactions: [],
+              topCategories: new Map(),
+              categoryTotals: new Map(),
+              merchantTotals: new Map(),
+              recurringExpenses: new Map(),
+              largestExpenses: [],
+            };
+          }
 
-          if (
-            summary[month].transactions.some(
-              (tr) =>
-                tr.description !== t.description &&
-                tr.description.toLowerCase().includes(descriptionKey)
-            )
-          ) {
-            summary[month].recurringExpenses.set(descriptionKey, {
+          if (t.isIncome) summary[month].income += t.amount;
+          if (t.isExpense) summary[month].expenses += t.amount;
+
+          const descriptionKey = t.description.toLowerCase().trim();
+          const merchantTotal =
+            summary[month].merchantTotals.get(descriptionKey) || 0;
+          summary[month].merchantTotals.set(
+            descriptionKey,
+            merchantTotal + t.amount
+          );
+
+          const categoryTotal =
+            summary[month].categoryTotals.get(t.topLevelCategory) || 0;
+          summary[month].categoryTotals.set(
+            t.topLevelCategory,
+            categoryTotal + t.amount
+          );
+
+          const currentCount =
+            summary[month].topCategories.get(t.topLevelCategory) || 0;
+          summary[month].topCategories.set(
+            t.topLevelCategory,
+            currentCount + 1
+          );
+
+          if (t.isExpense) {
+            summary[month].transactions.push({
+              description: t.description,
+              originalDescription: t.originalDescription,
               amount: t.amount,
               category: t.topLevelCategory,
-              frequency: "monthly",
+              date: t.date,
             });
-          }
-        }
 
-        return summary;
-      }, {});
+            if (
+              summary[month].transactions.some(
+                (tr) =>
+                  tr.description !== t.description &&
+                  tr.description.toLowerCase().includes(descriptionKey)
+              )
+            ) {
+              summary[month].recurringExpenses.set(descriptionKey, {
+                amount: t.amount,
+                category: t.topLevelCategory,
+                frequency: "monthly",
+              });
+            }
+          }
+
+          return summary;
+        },
+        {}
+      );
 
       logger(transactionSummary);
 

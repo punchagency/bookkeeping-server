@@ -38,24 +38,60 @@ export default class GetTransactionsHandler {
     const mxUserId = currentUser.mxUsers[0].mxUserId;
     const { perPage, currentPage } = values;
 
-    const transactionsResponse = await this._mxClient.client.listTransactions(
+    const countResponse = await this._mxClient.client.listTransactions(
       mxUserId,
       undefined,
-      currentPage,
-      perPage
+      1,
+      1
     );
 
-    if (transactionsResponse.status !== 200) {
+    const totalTransactions = countResponse.data.pagination.total_entries;
+    const totalPages = Math.ceil(totalTransactions / 1000);
+
+    let allTransactions: any[] = [];
+    for (let page = 1; page <= totalPages; page++) {
+      const batchResponse = await this._mxClient.client.listTransactions(
+        mxUserId,
+        undefined,
+        page,
+        1000
+      );
+      allTransactions = [
+        ...allTransactions,
+        ...batchResponse.data.transactions,
+      ];
+    }
+
+    const paginatedTransactionsResponse =
+      await this._mxClient.client.listTransactions(
+        mxUserId,
+        undefined,
+        currentPage,
+        perPage
+      );
+
+    if (paginatedTransactionsResponse.status !== 200) {
       return Result.Fail([{ message: "Error fetching transactions from MX" }]);
     }
 
-    logger(
-      `${transactionsResponse.data.transactions.length} transactions fetched`
+    const totals = allTransactions.reduce(
+      (acc, t) => {
+        if (t.is_income) acc.totalIncome += Number(t.amount);
+        if (t.is_expense) acc.totalExpenses += Number(t.amount);
+        return acc;
+      },
+      { totalIncome: 0, totalExpenses: 0 }
     );
 
-    const transactions = transactionsResponse.data.transactions;
+    const formattedTotals = {
+      income: Number(totals.totalIncome.toFixed(2)),
+      expenses: Number(totals.totalExpenses.toFixed(2)),
+      netChange: Number(totals.totalIncome - totals.totalExpenses),
+    };
 
-    const transformedTransactions = transactions.map((t: any) => ({
+    const paginatedTransactions =
+      paginatedTransactionsResponse.data.transactions;
+    const transformedTransactions = paginatedTransactions.map((t: any) => ({
       category: t.category,
       date: t.date,
       status: t.status,
@@ -86,55 +122,16 @@ export default class GetTransactionsHandler {
 
     await this._transactionRepository.insertMany(transformedTransactions);
 
-    const dbTransactions = await this._transactionRepository.findAll();
-
-    const totals = dbTransactions.reduce(
-      (acc, t) => {
-        if (t.isIncome) acc.totalIncome += Number(t.amount);
-        if (t.isExpense) acc.totalExpenses += Number(t.amount);
-        acc.categories[t.topLevelCategory] =
-          (acc.categories[t.topLevelCategory] || 0) + t.amount;
-        acc.merchantFrequency[t.description] =
-          (acc.merchantFrequency[t.description] || 0) + 1;
-        if (t.amount > (acc.highestTransaction?.amount || 0)) {
-          acc.highestTransaction = {
-            amount: t.amount,
-            description: t.description,
-            category: t.topLevelCategory,
-          };
-        }
-        return acc;
-      },
-      {
-        totalIncome: 0,
-        totalExpenses: 0,
-        netChange: 0,
-        categories: {},
-        merchantFrequency: {},
-        highestTransaction: null,
-      }
-    );
-
-    const formattedTotals = {
-      income: Number(totals.totalIncome.toFixed(2)),
-      expenses: Number(totals.totalExpenses.toFixed(2)),
-      netChange: Number(totals.totalIncome - totals.totalExpenses),
-    };
-
     const responseData = {
-      transactions: dbTransactions,
+      transactions: transformedTransactions,
       pagination: {
-        currentPage: transactionsResponse.data.pagination.current_page,
-        perPage: transactionsResponse.data.pagination.per_page,
-        totalEntries: transactionsResponse.data.pagination.total_entries,
-        totalPages: transactionsResponse.data.pagination.total_pages,
+        currentPage: paginatedTransactionsResponse.data.pagination.current_page,
+        perPage: paginatedTransactionsResponse.data.pagination.per_page,
+        totalEntries:
+          paginatedTransactionsResponse.data.pagination.total_entries,
+        totalPages: paginatedTransactionsResponse.data.pagination.total_pages,
       },
-
-      totals: {
-        income: formattedTotals.income,
-        expenses: formattedTotals.expenses,
-        netChange: formattedTotals.netChange,
-      },
+      totals: formattedTotals,
     };
 
     return Result.Ok(responseData);
