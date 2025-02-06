@@ -38,31 +38,6 @@ export default class GetTransactionsHandler {
     const mxUserId = currentUser.mxUsers[0].mxUserId;
     const { perPage, currentPage } = values;
 
-    // Get all transactions from MX for totals calculation
-    const allTransactionsResponse =
-      await this._mxClient.client.listTransactions(
-        mxUserId,
-        undefined,
-        1,
-        1000
-      );
-
-    const totals = allTransactionsResponse.data.transactions.reduce(
-      (acc, t) => {
-        if (t.is_income) acc.totalIncome += t.amount;
-        if (t.is_expense) acc.totalExpenses += t.amount;
-        acc.netChange += t.is_income ? t.amount : -t.amount;
-        return acc;
-      },
-      { totalIncome: 0, totalExpenses: 0, netChange: 0 }
-    );
-
-    const formattedTotals = {
-      income: Number(totals.totalIncome.toFixed(2)),
-      expenses: Number(totals.totalExpenses.toFixed(2)),
-      netChange: Number(totals.netChange.toFixed(2)),
-    };
-
     const transactionsResponse = await this._mxClient.client.listTransactions(
       mxUserId,
       undefined,
@@ -111,14 +86,50 @@ export default class GetTransactionsHandler {
 
     await this._transactionRepository.insertMany(transformedTransactions);
 
+    const dbTransactions = await this._transactionRepository.findAll();
+
+    const totals = dbTransactions.reduce(
+      (acc, t) => {
+        if (t.isIncome) acc.totalIncome += Number(t.amount);
+        if (t.isExpense) acc.totalExpenses += Number(t.amount);
+        acc.categories[t.topLevelCategory] =
+          (acc.categories[t.topLevelCategory] || 0) + t.amount;
+        acc.merchantFrequency[t.description] =
+          (acc.merchantFrequency[t.description] || 0) + 1;
+        if (t.amount > (acc.highestTransaction?.amount || 0)) {
+          acc.highestTransaction = {
+            amount: t.amount,
+            description: t.description,
+            category: t.topLevelCategory,
+          };
+        }
+        return acc;
+      },
+      {
+        totalIncome: 0,
+        totalExpenses: 0,
+        netChange: 0,
+        categories: {},
+        merchantFrequency: {},
+        highestTransaction: null,
+      }
+    );
+
+    const formattedTotals = {
+      income: Number(totals.totalIncome.toFixed(2)),
+      expenses: Number(totals.totalExpenses.toFixed(2)),
+      netChange: Number(totals.totalIncome - totals.totalExpenses),
+    };
+
     const responseData = {
-      transactions: transformedTransactions,
+      transactions: dbTransactions,
       pagination: {
         currentPage: transactionsResponse.data.pagination.current_page,
         perPage: transactionsResponse.data.pagination.per_page,
         totalEntries: transactionsResponse.data.pagination.total_entries,
         totalPages: transactionsResponse.data.pagination.total_pages,
       },
+
       totals: {
         income: formattedTotals.income,
         expenses: formattedTotals.expenses,
