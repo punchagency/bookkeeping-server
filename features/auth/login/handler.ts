@@ -3,18 +3,15 @@ import { Request, Response } from "express";
 import { injectable, inject } from "tsyringe";
 
 import loginSchema from "./login.dto";
-import { logger } from "./../../../utils";
 import { ILoginResponse } from "./login-response";
 import { Result } from "../../../application/result";
 import { TokenType } from "../../../domain/entities/token";
 import { AuthTokenUtils } from "../../../utils/auth-token";
-import { EnvConfiguration } from "../../../utils/env-config";
 import { UserRepository } from "../../../infrastructure/repositories/user/user-repository";
 import { TokenRepository } from "../../../infrastructure/repositories/token/token-repository";
 
 @injectable()
 export default class LoginHandler {
-  private readonly _envConfig: EnvConfiguration;
   private readonly _userRepository: UserRepository;
   private readonly _tokenRepository: TokenRepository;
   private readonly _authTokenUtils: AuthTokenUtils;
@@ -24,10 +21,8 @@ export default class LoginHandler {
     userRepository: UserRepository,
     @inject(TokenRepository.name)
     tokenRepository: TokenRepository,
-    @inject(EnvConfiguration.name) envConfig: EnvConfiguration,
     @inject(AuthTokenUtils.name) authTokenUtils: AuthTokenUtils
   ) {
-    this._envConfig = envConfig;
     this._userRepository = userRepository;
     this._tokenRepository = tokenRepository;
     this._authTokenUtils = authTokenUtils;

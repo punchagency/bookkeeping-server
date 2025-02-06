@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import { container } from "tsyringe";
 import {
@@ -9,9 +10,8 @@ import {
 } from "../../../../utils";
 import { User } from "../../../../domain/entities/user";
 import GlobalDIConfig from "../../../config/di/global-di-config";
-import { UserRepository } from "../../../repositories/user/user-repository";
 import MxClient from "../../../../infrastructure/config/packages/mx";
-import dotenv from "dotenv";
+import { UserRepository } from "../../../repositories/user/user-repository";
 dotenv.config();
 
 GlobalDIConfig.registerAllServices();

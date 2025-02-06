@@ -7,7 +7,7 @@ import { EnvConfiguration } from "./../../../../utils";
 export default class MxClient {
   private readonly _configuration: Configuration;
   private readonly _envConfiguration: EnvConfiguration;
-  private readonly _mxProductionApiUrl = "https://api.mx.com";
+  private readonly _mxProductionApiUrl  = "https://api.mx.com";
   private readonly _mxDevelopmentApiUrl = "https://int-api.mx.com";
   public client: MxPlatformApi;
 

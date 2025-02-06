@@ -22,8 +22,6 @@ export default class DeleteMxUserHandler {
   }
 
   private async deleteMxUser(data: IDeleteMxUser, req: Request) {
-    console.log(data.userId);
-
     const createMxUserResponse = await this._mxClient.client.deleteUser(
       data.userId
     );

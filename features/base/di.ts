@@ -1,4 +1,5 @@
 import { container } from "tsyringe";
+
 import BaseRoute from "./route";
 import BaseController from "./controller";
 

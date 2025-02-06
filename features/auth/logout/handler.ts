@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { injectable, inject } from "tsyringe";
 
-import { Result } from "../../../application/result";
 import { logger } from "../../../utils";
+import { Result } from "../../../application/result";
 import { TokenRepository } from "../../../infrastructure/repositories/token/token-repository";
 
 @injectable()

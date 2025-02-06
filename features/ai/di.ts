@@ -1,4 +1,5 @@
 import { container } from "tsyringe";
+
 import AiRoute from "./route";
 import AiController from "./controller";
 import SessionHandler from "./session/handler";
