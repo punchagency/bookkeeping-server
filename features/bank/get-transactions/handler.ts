@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import MxClient from "./../../../infrastructure/config/packages/mx";
 import { injectable, inject } from "tsyringe";
-import { logger } from "./../../../utils";
 import { Result } from "./../../../application/result";
 import { User } from "./../../../domain/entities/user";
 import { getTransactionsSchema } from "./get-transaction.dto";
