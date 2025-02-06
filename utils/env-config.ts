@@ -17,6 +17,8 @@ export class EnvConfiguration {
   public readonly SEEDED_ACCOUNT_EMAIL = process.env.SEEDED_ACCOUNT_EMAIL;
   public readonly SEEDED_ACCOUNT_PASSWORD = process.env.SEEDED_ACCOUNT_PASSWORD;
   public readonly OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+  public readonly FROM_EMAIL_ADDRESS = process.env.FROM_EMAIL_ADDRESS;
+  public readonly SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 }
 
 export const registerEnvConfigDi = () => {

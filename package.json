@@ -26,6 +26,7 @@
     "seed": "DEBUG=mx-backend ts-node ./infrastructure/persistence/seeders/user/index.ts"
   },
   "dependencies": {
+    "@sendgrid/mail": "^8.1.4",
     "@typegoose/typegoose": "^12.10.1",
     "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
