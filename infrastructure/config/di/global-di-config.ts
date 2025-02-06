@@ -6,26 +6,48 @@ import { registerBankDi } from "../../../features/bank/di";
 import { registerOpenAiClientDi } from "../packages/openai/di";
 import { registerMxUserDi } from "../../../features/mx-user/di";
 import { registerEnvConfigDi } from "./../../../utils/env-config";
+import { registerSendgridServiceDi } from "../packages/sendgrid/di";
 import { registerAuthTokenUtilsDi } from "../../../utils/auth-token";
 import { registerUserRepositoryDi } from "../../repositories/user/di";
 import { registerTokenRepositoryDi } from "../../repositories/token/di";
 import { registerApiResponseDi } from "../../../application/response/di";
 import { registerTransactionRepositoryDi } from "../../repositories/transaction/di";
 
+
 export default class GlobalDIConfig {
   public static registerAllServices() {
-    registerEnvConfigDi();
-    registerMxClientDi();
-    registerApiResponseDi();
+    /**
+     * Application Services || Features
+     */
+    registerAiDi();
     registerBaseDi();
     registerAuthDi();
     registerBankDi();
     registerMxUserDi();
+
+    /**
+     * External Services
+     */
+    registerOpenAiClientDi();
+    registerSendgridServiceDi();
+    registerMxClientDi();
+
+    /**
+     * Repositories
+     */
     registerTokenRepositoryDi();
     registerUserRepositoryDi();
-    registerAuthTokenUtilsDi();
     registerTransactionRepositoryDi();
-    registerOpenAiClientDi();
-    registerAiDi();
+
+    /**
+     * Utils
+     */
+    registerAuthTokenUtilsDi();
+    registerEnvConfigDi();
+
+    /**
+     * Application Behaviors
+     */
+    registerApiResponseDi();
   }
 }
