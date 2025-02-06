@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
-import { Result } from "./../../../application/result";
-import MxClient from "./../../../infrastructure/config/packages/mx";
+
 import { logger } from "./../../../utils";
+import { Result } from "./../../../application/result";
 import { User } from "./../../../domain/entities/user";
+import MxClient from "./../../../infrastructure/config/packages/mx";
 
 @injectable()
 export default class ConnectBankHandler {

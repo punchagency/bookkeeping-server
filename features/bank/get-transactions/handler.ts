@@ -1,12 +1,12 @@
+import { Types } from "mongoose";
 import { Request, Response } from "express";
-import MxClient from "./../../../infrastructure/config/packages/mx";
 import { injectable, inject } from "tsyringe";
 import { Result } from "./../../../application/result";
 import { User } from "./../../../domain/entities/user";
 import { getTransactionsSchema } from "./get-transaction.dto";
-import { ITransactionRepository } from "../../../infrastructure/repositories/transaction/i-transaction-repository";
+import MxClient from "./../../../infrastructure/config/packages/mx";
 import { TransactionRepository } from "./../../../infrastructure/repositories/transaction/transaction-repository";
-import { Types } from "mongoose";
+import { ITransactionRepository } from "../../../infrastructure/repositories/transaction/i-transaction-repository";
 
 @injectable()
 export default class GetTransactionsHandler {

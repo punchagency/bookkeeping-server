@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
 import { injectable } from "tsyringe";
+import { Request, Response } from "express";
 
 import { Result } from "./../../../application/result";
 import { User } from "./../../../domain/entities/user";

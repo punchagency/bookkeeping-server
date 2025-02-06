@@ -1,8 +1,8 @@
+import { Types } from "mongoose";
 import { injectable } from "tsyringe";
-import { TokenModel, Token, TokenType } from "../../../domain/entities/token";
 import { Repository } from "../repository";
 import { ITokenRepository } from "./i-token-repository";
-import { Types } from "mongoose";
+import { TokenModel, Token, TokenType } from "../../../domain/entities/token";
 
 @injectable()
 export class TokenRepository

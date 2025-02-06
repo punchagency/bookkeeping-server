@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { inject, injectable } from "tsyringe";
+
 import AiController from "./controller";
 import { useAuth } from "./../../infrastructure/middlewares";
 

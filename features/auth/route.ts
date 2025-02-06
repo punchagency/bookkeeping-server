@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { inject, injectable } from "tsyringe";
 import AuthController from "./controller";
-import LogoutHandler from "./logout/handler";
 
 @injectable()
 export default class AuthRoute {

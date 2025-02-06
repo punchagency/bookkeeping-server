@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
 
+import CurrentBankHandler from "./current/handler";
+import ConnectBankHandler from "./connect-bank/handler";
+import DisconnectBankHandler from "./disconnect-bank/handler";
+import GetTransactionsHandler from "./get-transactions/handler";
 import ApiResponse from "./../../application/response/response";
 import { IApiResponse } from "./../../application/response/i-response";
-import ConnectBankHandler from "./connect-bank/handler";
-import CurrentBankHandler from "./current/handler";
-import GetTransactionsHandler from "./get-transactions/handler";
-import DisconnectBankHandler from "./disconnect-bank/handler";
 
 @injectable()
 export default class BankController {

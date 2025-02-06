@@ -6,11 +6,11 @@ import { injectable, inject } from "tsyringe";
 import { logger } from "../../../utils";
 import { Result } from "../../../application/result";
 import { TokenType } from "../../../domain/entities/token";
+import { AuthTokenUtils } from "../../../utils/auth-token";
 import { EnvConfiguration } from "../../../utils/env-config";
 import { IRefreshTokenResponse } from "./refresh-token-response";
 import { UserRepository } from "../../../infrastructure/repositories/user/user-repository";
 import { TokenRepository } from "../../../infrastructure/repositories/token/token-repository";
-import { AuthTokenUtils } from "../../../utils/auth-token";
 
 @injectable()
 export default class RefreshTokenHandler {

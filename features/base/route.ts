@@ -1,5 +1,6 @@
-import { injectable, inject } from "tsyringe";
 import { Router } from "express";
+import { injectable, inject } from "tsyringe";
+
 import BaseController from "./controller";
 
 @injectable()

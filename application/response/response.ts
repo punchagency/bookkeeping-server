@@ -1,7 +1,9 @@
-import HttpConstants from "./../constants/http";
-import { IApiResponse } from "./i-response";
+
 import { Response } from "express";
 import { injectable, inject } from "tsyringe";
+
+import { IApiResponse } from "./i-response";
+import HttpConstants from "./../constants/http";
 
 @injectable()
 class ApiResponse implements IApiResponse {

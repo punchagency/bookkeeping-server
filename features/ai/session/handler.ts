@@ -1,10 +1,12 @@
+import axios from "axios";
 import { Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
-import axios from "axios";
-import { EnvConfiguration, logger } from "./../../../utils";
+
+
 import { Result } from "./../../../application/result";
-import MxClient from "./../../../infrastructure/config/packages/mx";
 import { User } from "./../../../domain/entities/user";
+import { EnvConfiguration, logger } from "./../../../utils";
+import MxClient from "./../../../infrastructure/config/packages/mx";
 
 @injectable()
 export default class SessionHandler {

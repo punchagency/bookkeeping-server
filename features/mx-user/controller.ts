@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
 
+import { logger } from "./../../utils";
 import CreateMxUserHandler from "./create-user/handler";
 import DeleteMxUserHandler from "./delete-user/handler";
 import GetAllMxUsersHandler from "./get-all-users/handler";
 import GetStatementsHandler from "./get-statements/handler";
 import ApiResponse from "./../../application/response/response";
 import { IApiResponse } from "./../../application/response/i-response";
-import { logger } from "./../../utils";
 @injectable()
 export default class MXUserController {
   private readonly _apiResponse: IApiResponse;

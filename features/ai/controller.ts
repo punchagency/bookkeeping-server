@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
+
 import SessionHandler from "./session/handler";
 import ApiResponse from "./../../application/response/response";
 import { IApiResponse } from "./../../application/response/i-response";
