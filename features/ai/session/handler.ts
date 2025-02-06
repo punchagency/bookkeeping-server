@@ -31,11 +31,10 @@ export default class SessionHandler {
     try {
       const transactions = await this._transactionRepository.findAll();
 
-      const overallTotals = transactions.reduce(
+      const totals = transactions.reduce(
         (acc, t) => {
-          if (t.isIncome) acc.totalIncome += t.amount;
-          if (t.isExpense) acc.totalExpenses += t.amount;
-          acc.netChange += t.isIncome ? t.amount : -t.amount;
+          if (t.isIncome) acc.totalIncome += Number(t.amount);
+          if (t.isExpense) acc.totalExpenses += Number(t.amount);
           acc.categories[t.topLevelCategory] =
             (acc.categories[t.topLevelCategory] || 0) + t.amount;
           acc.merchantFrequency[t.description] =
@@ -59,10 +58,20 @@ export default class SessionHandler {
         }
       );
 
+      const formattedTotals = {
+        income: Number(totals.totalIncome.toFixed(2)),
+        expenses: Number(totals.totalExpenses.toFixed(2)),
+        netChange: Number(totals.totalIncome - totals.totalExpenses),
+      };
+
       const spendingTrends = transactions.reduce(
         (acc, t) => {
           const date = new Date(t.date);
           const dayOfWeek = date.toLocaleString("en-US", { weekday: "long" });
+          const monthYear = date.toLocaleString("en-US", {
+            month: "long",
+            year: "numeric",
+          });
 
           if (t.isExpense) {
             acc.byDayOfWeek[dayOfWeek] =
@@ -74,19 +83,22 @@ export default class SessionHandler {
                 amount: t.amount,
                 description: t.description,
                 category: t.topLevelCategory,
+                formattedDate: new Date(t.date).toLocaleDateString("en-US", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                }),
               });
             }
+
+            acc.monthlySpending[monthYear] =
+              (acc.monthlySpending[monthYear] || 0) + t.amount;
           }
           return acc;
         },
-        { byDayOfWeek: {}, largeTransactions: [] }
+        { byDayOfWeek: {}, largeTransactions: [], monthlySpending: {} }
       );
-
-      const formattedTotals = {
-        income: Number(overallTotals.totalIncome.toFixed(2)),
-        expenses: Number(overallTotals.totalExpenses.toFixed(2)),
-        netChange: Number(overallTotals.netChange.toFixed(2)),
-      };
 
       const transactionSummary = transactions.reduce((summary, t) => {
         const month = new Date(t.date).toLocaleString("default", {
@@ -160,17 +172,24 @@ export default class SessionHandler {
         You are a highly specialized financial assistant designed to analyze and respond exclusively to queries related to personal finance, transactions, budgeting, investments, expenses, savings, and other financial matters.
         
         Overall Financial Summary:
-        - Total Income (All Time): $${formattedTotals.income}
-        - Total Expenses (All Time): $${formattedTotals.expenses}
-        - Net Change (All Time): $${formattedTotals.netChange}
+        - Total Income (All Time): $${formattedTotals.income.toLocaleString(
+          "en-US",
+          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+        )}
+        - Total Expenses (All Time): $${formattedTotals.expenses.toLocaleString(
+          "en-US",
+          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+        )}
+        - Net Change (All Time): $${formattedTotals.netChange.toLocaleString(
+          "en-US",
+          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+        )}
         
         Spending Analysis:
-        - Highest Single Transaction: $${overallTotals.highestTransaction?.amount.toFixed(
+        - Highest Single Transaction: $${totals.highestTransaction?.amount.toFixed(
           2
-        )} (${overallTotals.highestTransaction?.description})
-        - Most Frequent Transactions: ${Object.entries(
-          overallTotals.merchantFrequency
-        )
+        )} (${totals.highestTransaction?.description})
+        - Most Frequent Transactions: ${Object.entries(totals.merchantFrequency)
           .sort((a, b) => Number(b[1]) - Number(a[1]))
           .slice(0, 5)
           .map(([desc, count]) => `${desc} (${count} times)`)
@@ -181,8 +200,14 @@ export default class SessionHandler {
           .map(([day, amount]) => `- ${day}: $${Number(amount).toFixed(2)}`)
           .join("\n")}
         
+        Spending Trends Over Time:
+        ${Object.entries(spendingTrends.monthlySpending)
+          .sort((a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime())
+          .map(([month, amount]) => `- ${month}: $${Number(amount).toFixed(2)}`)
+          .join("\n")}
+        
         Category Distribution:
-        ${Object.entries(overallTotals.categories)
+        ${Object.entries(totals.categories)
           .sort((a, b) => Number(b[1]) - Number(a[1]))
           .map(
             ([category, amount]) =>
@@ -201,9 +226,9 @@ export default class SessionHandler {
           .slice(0, 10)
           .map(
             (t) =>
-              `- ${new Date(t.date).toLocaleDateString()}: ${
-                t.description
-              } - $${t.amount.toFixed(2)}`
+              `- ${t.formattedDate}: ${t.description} - $${t.amount.toFixed(
+                2
+              )} (${t.category})`
           )
           .join("\n")}
 
@@ -248,7 +273,12 @@ export default class SessionHandler {
             .slice(0, 5)
             .map(
               (t) =>
-                `  • ${t.description} (${t.category}): $${t.amount.toFixed(
+                `  • ${new Date(t.date).toLocaleDateString("en-US", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}: ${t.description} (${t.category}) - $${t.amount.toFixed(
                   2
                 )}\n    Original Description: ${t.originalDescription}`
             )
@@ -260,14 +290,17 @@ export default class SessionHandler {
         Based on this comprehensive financial data:
         1. Analyze overall financial health and spending patterns
         2. Identify days of the week with highest spending
-        3. Highlight categories that might need attention based on their percentage of total expenses
-        4. Point out frequent transactions that might be optimized
-        5. Suggest specific areas for potential savings
-        6. Compare spending patterns across different time periods
-        7. Identify any concerning trends or positive financial behaviors
+        3. Note any seasonal or monthly spending patterns
+        4. Highlight categories that might need attention based on their percentage of total expenses
+        5. Point out frequent transactions that might be optimized
+        6. Suggest specific areas for potential savings
+        7. Compare spending patterns across different time periods
+        8. Identify any concerning trends or positive financial behaviors
         
         Your responses must always remain within the financial domain, even if the user tries to divert the conversation to unrelated topics.
       `.trim();
+
+      logger(systemPrompt);
 
       const response = await axios.post(
         "https://api.openai.com/v1/realtime/sessions",
