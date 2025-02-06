@@ -31,39 +31,29 @@ export default class GetStatementsHandler {
   private async getStatements(user: User, pageOptions: IPageOptions) {
     const mxUserId = user.mxUsers.find(
       (mxUser) => mxUser.id === user._id?.toString()
-    )?.mxUserId;
-    if (!mxUserId) {
-      return Result.Fail([{ message: "MX User ID not found" }]);
-    }
+    ).mxUserId;
+
     const mxUserMember = await this._mxClient.client.listMembers(mxUserId);
 
-    console.log("====================================");
-    console.log("MX User Member:", mxUserMember.data);
-    console.log("====================================");
+    /**
+     * For now we can just get the first member. As this is a proof of concept.
+     */
+    const mxUserMemberGuid = mxUserMember.data.members[0].guid;
 
-    const mxUserMemberGuid = mxUserMember.data.members[0]?.guid;
-    if (!mxUserMemberGuid) {
-      return Result.Fail([{ message: "MX User Member GUID not found" }]);
-    }
-    console.log("====================================");
-    console.log("MX User Member GUID:", mxUserMemberGuid);
-    console.log("====================================");
-    try {
-      const statementsResponse = await this._mxClient.client.fetchStatements(
-        "MBR-b8809a41-3699-4a0e-adea-4ed6815f0677",
-        "USR-747e3e72-5eee-4fe5-b06f-11af9f4c11ac"
+    const statementsResponse =
+      await this._mxClient.client.listStatementsByMember(
+        mxUserMemberGuid,
+        mxUserId,
+        pageOptions.page,
+        pageOptions.recordsPerPage
       );
-      console.log("====================================");
-      console.log("Statements Response:", statementsResponse);
-      console.log("====================================");
-      if (statementsResponse.status !== 200) {
-        return Result.Fail([{ message: "Error getting statements from MX" }]);
-      }
-      logger(statementsResponse.data);
-      return Result.Ok(statementsResponse.data);
-    } catch (error) {
-      console.error("Error fetching statements:");
-      return Result.Fail([{ message: "Error fetching statements" }]);
+
+    if (statementsResponse.status !== 200) {
+      return Result.Fail([{ message: "Error getting statements from MX" }]);
     }
+
+    logger(statementsResponse.data);
+
+    return Result.Ok(statementsResponse.data);
   }
 }
