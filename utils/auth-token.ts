@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import { Types } from "mongoose";
 import { Response } from "express";
@@ -55,6 +56,13 @@ export class AuthTokenUtils {
 
   getRefreshTokenExpiry(): Date {
     return new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  }
+
+  generateOtpToken() {
+    const buffer = crypto.randomBytes(3);
+    const number = buffer.readUintBE(0, 3) % 1000000;
+
+    return number.toString().padStart(6, "0");
   }
 }
 

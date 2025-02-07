@@ -49,12 +49,19 @@ export default class AuthController {
     const signupResult = await this._signupHandler.handle(req, res);
 
     if (signupResult.isFailure) {
-      let errors = signupResult.errors.map((error) => error.message);
+      if (signupResult.metadata.statusCode == 409) {
+        return this._apiResponse.Conflict(res, "User already exist", null);
+      }
 
+      let errors = signupResult.errors.map((error) => error.message);
       return this._apiResponse.BadRequest(res, errors);
     }
 
-    return this._apiResponse.Ok(res, "Signup successsful", signupResult.value);
+    return this._apiResponse.Created(
+      res,
+      "Account created. Please check your email for the OTP.",
+      null
+    );
   }
 
   public async logout(req: Request, res: Response) {

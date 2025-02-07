@@ -19,6 +19,9 @@ class User {
   @prop({ required: true })
   public password: string;
 
+  @prop({ required: true, default: false })
+  public isVerified: boolean;
+
   @prop({ type: () => [Object], default: [] })
   public mxUsers: Array<{
     id: string;
