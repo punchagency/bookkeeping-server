@@ -11,7 +11,11 @@ export default class VerifyOtpHandler {
   private readonly _userRepository: UserRepository;
   private readonly _tokenRepository: TokenRepository;
 
-  constructor(@inject(TokenRepository.name) tokenRepository) {
+  constructor(
+    @inject(TokenRepository.name) tokenRepository,
+    @inject(UserRepository.name) userRepository
+  ) {
+    this._userRepository = userRepository;
     this._tokenRepository = tokenRepository;
   }
 
@@ -29,6 +33,7 @@ export default class VerifyOtpHandler {
     }
 
     if (otpExists.expiresAt < new Date()) {
+      await this._tokenRepository.delete(otpExists.id);
       return Result.Fail([{ message: "Invalid or expired token" }]);
     }
 

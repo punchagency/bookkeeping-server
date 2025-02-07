@@ -25,12 +25,14 @@ export default class AuthController {
     @inject(LoginHandler.name) loginHandler: LoginHandler,
     @inject(SignupHandler.name) signupHandler: SignupHandler,
     @inject(LogoutHandler.name) logoutHandler: LogoutHandler,
+    @inject(VerifyOtpHandler.name) verifyOtpHandler: VerifyOtpHandler,
     @inject(RefreshTokenHandler.name) refreshTokenHandler: RefreshTokenHandler
   ) {
     this._apiResponse = apiResponse;
     this._loginHandler = loginHandler;
     this._signupHandler = signupHandler;
     this._logoutHandler = logoutHandler;
+    this._verifyOtpHandler = verifyOtpHandler;
     this._refreshTokenHandler = refreshTokenHandler;
   }
 
