@@ -27,5 +27,5 @@ export interface IApiResponse {
     requestPath?: string
   ): any;
 
-  Conflict(res: Response, message: string, data: any): any;
+  Conflict(res: Response, message: string, data?: any): any;
 }

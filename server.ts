@@ -6,6 +6,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import { inject, injectable } from "tsyringe";
+import "reflect-metadata";
 
 import AiRoute from "./features/ai/route";
 import BaseRoute from "./features/base/route";
@@ -25,16 +26,16 @@ import { useErrorHandler, useNotFound } from "./infrastructure/middlewares/";
 
 @injectable()
 export default class Server {
-  private readonly _app: express.Application;
   private readonly _apiVersion = "/v1";
-  private readonly _envConfig: EnvConfiguration;
 
+  private readonly _aiRoute: AiRoute;
   private readonly _baseRoute: BaseRoute;
   private readonly _authRoute: AuthRoute;
   private readonly _bankRoute: BankRoute;
   private readonly _mxUserRoute: MxUserRoute;
 
-  private readonly _aiRoute: AiRoute; 
+  private readonly _app: express.Application;
+  private readonly _envConfig: EnvConfiguration;
 
   constructor(
     @inject(AiRoute.name) aiRoute: AiRoute,
@@ -52,6 +53,7 @@ export default class Server {
     this._mxUserRoute = mxUserRoute;
 
     this._envConfig = envConfiguration;
+
     this._app = express();
     this.setupMiddlewares();
     this.setupRoutes();

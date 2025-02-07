@@ -1,11 +1,11 @@
 import { container } from "tsyringe";
 
-import AuthRoute from "./route";
-import AuthController from "./controller";
-import LoginHandler from "./login/handler";
-import SignupHandler from "./signup/handler";
-import RefreshTokenHandler from "./refresh-token/handler";
-import LogoutHandler from "./logout/handler";
+import AuthRoute from "../route";
+import AuthController from "../controller";
+import LoginHandler from "../login/handler";
+import SignupHandler from "../signup/handler";
+import LogoutHandler from "../logout/handler";
+import RefreshTokenHandler from "../refresh-token/handler";
 
 export const registerAuthDi = () => {
   container.register(AuthController.name, {

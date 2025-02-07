@@ -1,7 +1,7 @@
 import { registerMxClientDi } from "../packages/mx/di";
 import { registerAiDi } from "../../../features/ai/di";
 import { registerBaseDi } from "../../../features/base/di";
-import { registerAuthDi } from "../../../features/auth/di";
+import { registerAuthDi } from "../../../features/auth/di/di";
 import { registerBankDi } from "../../../features/bank/di";
 import { registerOpenAiClientDi } from "../packages/openai/di";
 import { registerMxUserDi } from "../../../features/mx-user/di";
@@ -12,7 +12,6 @@ import { registerUserRepositoryDi } from "../../repositories/user/di";
 import { registerTokenRepositoryDi } from "../../repositories/token/di";
 import { registerApiResponseDi } from "../../../application/response/di";
 import { registerTransactionRepositoryDi } from "../../repositories/transaction/di";
-
 
 export default class GlobalDIConfig {
   public static registerAllServices() {

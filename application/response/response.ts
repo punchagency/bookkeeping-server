@@ -154,7 +154,7 @@ class ApiResponse implements IApiResponse {
   Conflict(
     res: Response,
     message: string = this.httpConstants.CONFLICT,
-    data: any
+    data?: any
   ) {
     return this.Base(res, 409, message, data);
   }

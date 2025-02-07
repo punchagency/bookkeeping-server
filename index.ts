@@ -3,6 +3,7 @@ import "reflect-metadata";
 import Server from "./server";
 import { container } from "tsyringe";
 import GlobalDIConfig from "./infrastructure/config/di/global-di-config";
+import "./infrastructure/events";
 
 GlobalDIConfig.registerAllServices();
 

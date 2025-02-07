@@ -1,13 +1,10 @@
-import {
-  prop,
-  getModelForClass,
-  modelOptions,
-} from "@typegoose/typegoose";
+import { prop, getModelForClass, modelOptions } from "@typegoose/typegoose";
 import { User } from "../user";
 import { Types } from "mongoose";
 
 enum TokenType {
   REFRESH_TOKEN = "refreshToken",
+  OTP = "otp",
 }
 
 @modelOptions({
