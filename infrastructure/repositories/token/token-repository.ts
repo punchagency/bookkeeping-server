@@ -35,4 +35,10 @@ export class TokenRepository
     }).exec();
     return result.deletedCount > 0;
   }
+
+  async findByOtp(otp: string) {
+    return await TokenModel.findOne({
+      token: otp,
+    }).exec();
+  }
 }

@@ -30,5 +30,9 @@ export default class AuthRoute {
     this.router.post("/logout", (req, res) =>
       this._authController.logout(req, res)
     );
+
+    this.router.post("/verify-otp", (req, res) =>
+      this._authController.verifyOtp(req, res)
+    );
   }
 }
