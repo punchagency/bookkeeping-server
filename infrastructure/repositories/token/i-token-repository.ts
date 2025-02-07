@@ -7,4 +7,5 @@ export interface ITokenRepository extends IRepository<Token> {
   findByRefreshToken(refreshToken: string): Promise<Token | null>;
   deleteByUserId(userId: Types.ObjectId): Promise<boolean>;
   deleteRefreshTokens(userId: Types.ObjectId): Promise<boolean>;
+  findByOtp(otp: string);
 }

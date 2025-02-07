@@ -5,6 +5,7 @@ import { logger } from "./../../utils";
 import LoginHandler from "./login/handler";
 import SignupHandler from "./signup/handler";
 import LogoutHandler from "./logout/handler";
+import VerifyOtpHandler from "./verify-otp/handler";
 import RefreshTokenHandler from "./refresh-token/handler";
 
 import ApiResponse from "./../../application/response/response";
@@ -16,6 +17,7 @@ export default class AuthController {
   private readonly _loginHandler: LoginHandler;
   private readonly _signupHandler: SignupHandler;
   private readonly _logoutHandler: LogoutHandler;
+  private readonly _verifyOtpHandler: VerifyOtpHandler;
   private readonly _refreshTokenHandler: RefreshTokenHandler;
 
   constructor(
@@ -89,5 +91,15 @@ export default class AuthController {
       "Access token refreshed successfully",
       refreshTokenResult.value
     );
+  }
+
+  public async verifyOtp(req: Request, res: Response) {
+    const verifyOtpResult = await this._verifyOtpHandler.handle(req, res);
+
+    if (verifyOtpResult.isFailure) {
+      return this._apiResponse.BadRequest(res, verifyOtpResult.errors);
+    }
+
+    return this._apiResponse.Ok(res, "Account verified successfully", null);
   }
 }
