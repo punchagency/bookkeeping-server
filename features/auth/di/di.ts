@@ -5,6 +5,7 @@ import AuthController from "../controller";
 import LoginHandler from "../login/handler";
 import SignupHandler from "../signup/handler";
 import LogoutHandler from "../logout/handler";
+import VerifyOtpHandler from "../verify-otp/handler";
 import RefreshTokenHandler from "../refresh-token/handler";
 
 export const registerAuthDi = () => {
@@ -30,5 +31,9 @@ export const registerAuthDi = () => {
 
   container.register(LogoutHandler.name, {
     useClass: LogoutHandler,
+  });
+
+  container.register(VerifyOtpHandler.name, {
+    useClass: VerifyOtpHandler,
   });
 };
