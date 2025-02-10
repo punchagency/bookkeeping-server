@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import { injectable, inject } from "tsyringe";
 
 import { verifyOtpSchema } from "./verify-otp.dto";
-import { TokenRepository } from "./../../../infrastructure/repositories/token/token-repository";
 import { Result } from "./../../../application/result";
+import { TokenRepository } from "./../../../infrastructure/repositories/token/token-repository";
 import { UserRepository } from "./../../../infrastructure/repositories/user/user-repository";
 
 @injectable()
