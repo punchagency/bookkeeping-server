@@ -34,5 +34,9 @@ export default class AuthRoute {
     this.router.post("/verify-otp", (req, res) =>
       this._authController.verifyOtp(req, res)
     );
+
+    this.router.post("/resend-otp", (req, res) =>
+      this._authController.resendOtp(req, res)
+    );
   }
 }
