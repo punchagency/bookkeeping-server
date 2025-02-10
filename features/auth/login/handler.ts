@@ -45,6 +45,10 @@ export default class LoginHandler {
         return Result.Fail([{ message: "Invalid credentials" }]);
       }
 
+      if (!user.isVerified) {
+        return Result.Fail([{ message: "User is not verified" }]);
+      }
+
       await this._tokenRepository.deleteRefreshTokens(user._id);
 
       const accessToken = this._authTokenUtils.generateAccessToken(
