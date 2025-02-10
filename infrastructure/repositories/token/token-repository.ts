@@ -21,9 +21,10 @@ export class TokenRepository
     return await TokenModel.findOne({ token: refreshToken }).exec();
   }
 
-  async deleteByUserId(userId: Types.ObjectId): Promise<boolean> {
+  async deleteByUserId(userId: Types.ObjectId, type: TokenType): Promise<boolean> {
     const result = await TokenModel.deleteOne({
       userId,
+      type,
     }).exec();
     return result.deletedCount > 0;
   }
@@ -39,6 +40,13 @@ export class TokenRepository
   async findByOtp(otp: string) {
     return await TokenModel.findOne({
       token: otp,
+    }).exec();
+  }
+
+  async deleteAllOtpTokens(userId: Types.ObjectId) {
+    await TokenModel.deleteMany({
+      userId,
+      type: TokenType.OTP,
     }).exec();
   }
 }
