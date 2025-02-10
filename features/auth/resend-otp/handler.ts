@@ -1,14 +1,15 @@
 import dayjs from "dayjs";
 import { Request, Response } from "express";
 import { injectable, inject } from "tsyringe";
+
+import resendOtpEventEmitter from "./event";
+import { RESEND_OTP_EVENT } from "./event.dto";
 import { resendOtpSchema } from "./resend-otp.dto";
 import { Result } from "../../../application/result";
 import { AuthTokenUtils } from "./../../../utils/auth-token";
 import { TokenType } from "./../../../domain/entities/token";
 import { UserRepository } from "./../../../infrastructure/repositories/user/user-repository";
 import { TokenRepository } from "../../../infrastructure/repositories/token/token-repository";
-import resendOtpEventEmitter from "./event";
-import { RESEND_OTP_EVENT } from "./event.dto";
 
 @injectable()
 export default class ResendOtpHandler {
@@ -29,41 +30,36 @@ export default class ResendOtpHandler {
   public async handle(req: Request, res: Response) {
     const values = await resendOtpSchema.validateAsync(req.body);
 
-    return this.resendOtp(values.otp);
+    return this.resendOtp(values.email);
   }
 
-  public async resendOtp(otp: string) {
-    const existingOtp = await this._tokenRepository.findByOtp(otp);
+  public async resendOtp(email: string) {
+    const existingUser = await this._userRepository.findByEmail(email);
 
-    if (!existingOtp) {
-      return Result.Fail([{ message: "Invalid or expired token" }]);
+    if (!existingUser) {
+      return Result.Fail([{ message: "User not found" }]).withMetadata({
+        statusCode: 404,
+      });
     }
-
-    const user = await this._userRepository.findById(existingOtp.userId);
-
-    if (!user) {
-      return Result.Fail([{ message: "User not found" }]);
-    }
-
-    if (user.isVerified) {
+    if (existingUser.isVerified) {
       return Result.Fail([{ message: "User already verified" }]);
     }
 
-    await this._tokenRepository.delete(existingOtp.id);
+    await this._tokenRepository.deleteAllOtpTokens(existingUser._id);
 
     const createdOtpToken = await this._tokenRepository.create({
-      userId: user._id,
+      userId: existingUser._id,
       expiresAt: dayjs().add(1, "hour").toDate(),
       token: this._authTokenUtils.generateOtpToken(),
       type: TokenType.OTP,
     });
 
     resendOtpEventEmitter.emit(RESEND_OTP_EVENT, {
-      fullName: user.fullName,
-      email: user.email,
+      fullName: existingUser.fullName,
+      email: existingUser.email,
       otp: createdOtpToken.token,
     });
 
-    return Result.Ok("OTP resent successfully");
+    return Result.Ok("New OTP sent successfully");
   }
 }

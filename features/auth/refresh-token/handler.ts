@@ -56,7 +56,10 @@ export default class RefreshTokenHandler {
       }
 
       if (tokenDoc.expiresAt < new Date()) {
-        await this._tokenRepository.deleteByUserId(tokenDoc.userId);
+        await this._tokenRepository.deleteByUserId(
+          tokenDoc.userId,
+          TokenType.REFRESH_TOKEN
+        );
         return Result.Fail([{ message: "Refresh token expired" }]);
       }
 
