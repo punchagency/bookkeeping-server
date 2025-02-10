@@ -6,6 +6,7 @@ import LoginHandler from "../login/handler";
 import SignupHandler from "../signup/handler";
 import LogoutHandler from "../logout/handler";
 import VerifyOtpHandler from "../verify-otp/handler";
+import ResendOtpHandler from "../resend-otp/handler";
 import RefreshTokenHandler from "../refresh-token/handler";
 
 export const registerAuthDi = () => {
@@ -35,5 +36,9 @@ export const registerAuthDi = () => {
 
   container.register(VerifyOtpHandler.name, {
     useClass: VerifyOtpHandler,
+  });
+
+  container.register(ResendOtpHandler.name, {
+    useClass: ResendOtpHandler,
   });
 };

@@ -5,7 +5,6 @@ import { injectable, inject } from "tsyringe";
 
 import signupSchema from "./signup.dto";
 import signupEventEmitter from "./event";
-import { logger } from "./../../../utils";
 import { Result } from "./../../../application/result";
 import { User } from "./../../../domain/entities/user";
 import { ISignupEvent, SIGNUP_EVENT } from "./event.dto";
@@ -101,8 +100,8 @@ export default class SignupHandler {
       });
 
       const signupEvent: ISignupEvent = {
-        fullName: values.fullName,
-        email: values.email,
+        fullName: user.fullName,
+        email: user.email,
         otp: createdOtpToken.token,
       };
 

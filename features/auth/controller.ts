@@ -6,6 +6,7 @@ import LoginHandler from "./login/handler";
 import SignupHandler from "./signup/handler";
 import LogoutHandler from "./logout/handler";
 import VerifyOtpHandler from "./verify-otp/handler";
+import ResendOtpHandler from "./resend-otp/handler";
 import RefreshTokenHandler from "./refresh-token/handler";
 
 import ApiResponse from "./../../application/response/response";
@@ -18,6 +19,7 @@ export default class AuthController {
   private readonly _signupHandler: SignupHandler;
   private readonly _logoutHandler: LogoutHandler;
   private readonly _verifyOtpHandler: VerifyOtpHandler;
+  private readonly _resendOtpHandler: ResendOtpHandler;
   private readonly _refreshTokenHandler: RefreshTokenHandler;
 
   constructor(
@@ -26,6 +28,7 @@ export default class AuthController {
     @inject(SignupHandler.name) signupHandler: SignupHandler,
     @inject(LogoutHandler.name) logoutHandler: LogoutHandler,
     @inject(VerifyOtpHandler.name) verifyOtpHandler: VerifyOtpHandler,
+    @inject(ResendOtpHandler.name) resendOtpHandler: ResendOtpHandler,
     @inject(RefreshTokenHandler.name) refreshTokenHandler: RefreshTokenHandler
   ) {
     this._apiResponse = apiResponse;
@@ -33,6 +36,7 @@ export default class AuthController {
     this._signupHandler = signupHandler;
     this._logoutHandler = logoutHandler;
     this._verifyOtpHandler = verifyOtpHandler;
+    this._resendOtpHandler = resendOtpHandler;
     this._refreshTokenHandler = refreshTokenHandler;
   }
 
@@ -103,5 +107,15 @@ export default class AuthController {
     }
 
     return this._apiResponse.Ok(res, "Account verified successfully", null);
+  }
+
+  public async resendOtp(req: Request, res: Response) {
+    const resendOtpResult = await this._resendOtpHandler.handle(req, res);
+
+    if (resendOtpResult.isFailure) {
+      return this._apiResponse.BadRequest(res, resendOtpResult.errors);
+    }
+
+    return this._apiResponse.Ok(res, "OTP resent successfully", null);
   }
 }

@@ -33,7 +33,6 @@ export default class VerifyOtpHandler {
     }
 
     if (otpExists.expiresAt < new Date()) {
-      await this._tokenRepository.delete(otpExists.id);
       return Result.Fail([{ message: "Invalid or expired token" }]);
     }
 
