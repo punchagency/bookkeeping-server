@@ -2,7 +2,6 @@ import axios from "axios";
 import { Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
 
-
 import { Result } from "./../../../application/result";
 import { User } from "./../../../domain/entities/user";
 import { EnvConfiguration, logger } from "./../../../utils";
