@@ -7,13 +7,12 @@ export const updateSettingsSchema = Joi.object({
     .allow(
       "alloy",
       "ash",
+      "ballad",
       "coral",
       "echo",
-      "fable",
-      "onyx",
-      "nova",
       "sage",
-      "shimmer"
+      "shimmer",
+      "verse"
     ),
 });
 
