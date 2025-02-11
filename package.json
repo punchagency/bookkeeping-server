@@ -12,6 +12,7 @@
     "@types/node": "^22.12.0",
     "@types/passport": "^1.0.17",
     "@types/passport-jwt": "^4.0.1",
+    "husky": "^9.1.7",
     "nodemon": "^3.1.0",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2"
@@ -23,7 +24,8 @@
     "build": "tsc",
     "start": "DEBUG=mx-backend node ./dist/index.js",
     "dev": "DEBUG=mx-backend nodemon",
-    "seed": "DEBUG=mx-backend ts-node ./infrastructure/persistence/seeders/user/index.ts"
+    "seed": "DEBUG=mx-backend ts-node ./infrastructure/persistence/seeders/user/index.ts",
+    "prepare": "husky"
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.4",
