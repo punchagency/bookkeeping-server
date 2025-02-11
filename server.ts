@@ -13,6 +13,7 @@ import BaseRoute from "./features/base/route";
 import AuthRoute from "./features/auth/route";
 import BankRoute from "./features/bank/route";
 import MxUserRoute from "./features/mx-user/route";
+import SettingsRoute from "./features/settings/route";
 
 import {
   logger,
@@ -33,6 +34,7 @@ export default class Server {
   private readonly _authRoute: AuthRoute;
   private readonly _bankRoute: BankRoute;
   private readonly _mxUserRoute: MxUserRoute;
+  private readonly _settingsRoute: SettingsRoute;
 
   private readonly _app: express.Application;
   private readonly _envConfig: EnvConfiguration;
@@ -43,7 +45,8 @@ export default class Server {
     @inject(AuthRoute.name) authRoute: AuthRoute,
     @inject(BankRoute.name) bankRoute: BankRoute,
     @inject(MxUserRoute.name) mxUserRoute: MxUserRoute,
-    @inject(EnvConfiguration.name) envConfiguration: EnvConfiguration
+    @inject(EnvConfiguration.name) envConfiguration: EnvConfiguration,
+    @inject(SettingsRoute.name) settingsRoute: SettingsRoute
   ) {
     dotenv.config();
     this._aiRoute = aiRoute;
@@ -51,7 +54,7 @@ export default class Server {
     this._authRoute = authRoute;
     this._bankRoute = bankRoute;
     this._mxUserRoute = mxUserRoute;
-
+    this._settingsRoute = settingsRoute;
     this._envConfig = envConfiguration;
 
     this._app = express();
@@ -76,6 +79,7 @@ export default class Server {
     this._app.use(`${this._apiVersion}/bank`, this._bankRoute.router);
     this._app.use(`${this._apiVersion}/mx-user`, this._mxUserRoute.router);
     this._app.use(`${this._apiVersion}/ai`, this._aiRoute.router);
+    this._app.use(`${this._apiVersion}/settings`, this._settingsRoute.router);
   }
 
   private setupErrorHandling() {

@@ -1,16 +1,18 @@
 import { registerMxClientDi } from "../packages/mx/di";
 import { registerAiDi } from "../../../features/ai/di";
 import { registerBaseDi } from "../../../features/base/di";
-import { registerAuthDi } from "../../../features/auth/di/di";
 import { registerBankDi } from "../../../features/bank/di";
+import { registerAuthDi } from "../../../features/auth/di/di";
 import { registerOpenAiClientDi } from "../packages/openai/di";
 import { registerMxUserDi } from "../../../features/mx-user/di";
 import { registerEnvConfigDi } from "./../../../utils/env-config";
 import { registerSendgridServiceDi } from "../packages/sendgrid/di";
 import { registerAuthTokenUtilsDi } from "../../../utils/auth-token";
 import { registerUserRepositoryDi } from "../../repositories/user/di";
+import { registerSettingsDi } from "./../../../features/settings/di/di";
 import { registerTokenRepositoryDi } from "../../repositories/token/di";
 import { registerApiResponseDi } from "../../../application/response/di";
+import { registerSettingsRepositoryDi } from "../../repositories/settings/di";
 import { registerTransactionRepositoryDi } from "../../repositories/transaction/di";
 
 export default class GlobalDIConfig {
@@ -23,6 +25,7 @@ export default class GlobalDIConfig {
     registerAuthDi();
     registerBankDi();
     registerMxUserDi();
+    registerSettingsDi();
 
     /**
      * External Services
@@ -36,8 +39,8 @@ export default class GlobalDIConfig {
      */
     registerTokenRepositoryDi();
     registerUserRepositoryDi();
+    registerSettingsRepositoryDi();
     registerTransactionRepositoryDi();
-
     /**
      * Utils
      */
