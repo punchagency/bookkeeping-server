@@ -19,12 +19,19 @@ export class Repository<T> implements IRepository<T> {
 
   async findAll(
     filter = {},
-    options: { limit?: number; sort?: { [key: string]: 1 | -1 } } = {}
+    options: {
+      limit?: number;
+      skip?: number;
+      take?: number;
+      sort?: { [key: string]: 1 | -1 };
+    } = {}
   ): Promise<T[]> {
     try {
       const query = this.model.find(filter);
       if (options.sort) query.sort(options.sort);
-      if (options.limit) query.limit(options.limit);
+      if (options.skip) query.skip(options.skip);
+      if (options.take) query.limit(options.take);
+      else if (options.limit) query.limit(options.limit);
       return await query.exec();
     } catch (error) {
       throw error;

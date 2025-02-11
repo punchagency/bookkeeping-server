@@ -4,7 +4,7 @@ import { ConversationController } from "./controller";
 import { useAuth } from "./../../infrastructure/middlewares";
 
 @injectable()
-export class ConversationRoute {
+export default class ConversationRoute {
   public readonly router: Router;
   private readonly _conversationController: ConversationController;
   constructor(
@@ -20,6 +20,10 @@ export class ConversationRoute {
   private registerRoutes() {
     this.router.post("/", [useAuth], (req, res) =>
       this._conversationController.createConversation(req, res)
+    );
+
+    this.router.get("/", [useAuth], (req, res) =>
+      this._conversationController.getConversations(req, res)
     );
   }
 }
