@@ -13,6 +13,7 @@ import { registerSettingsDi } from "./../../../features/settings/di/di";
 import { registerTokenRepositoryDi } from "../../repositories/token/di";
 import { registerApiResponseDi } from "../../../application/response/di";
 import { registerSettingsRepositoryDi } from "../../repositories/settings/di";
+import { registerConversationsDi } from "../../../features/conversations/di";
 import { registerTransactionRepositoryDi } from "../../repositories/transaction/di";
 
 export default class GlobalDIConfig {
@@ -26,6 +27,7 @@ export default class GlobalDIConfig {
     registerBankDi();
     registerMxUserDi();
     registerSettingsDi();
+    registerConversationsDi();
 
     /**
      * External Services
