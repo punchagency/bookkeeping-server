@@ -14,6 +14,7 @@ import { registerTokenRepositoryDi } from "../../repositories/token/di";
 import { registerApiResponseDi } from "../../../application/response/di";
 import { registerSettingsRepositoryDi } from "../../repositories/settings/di";
 import { registerConversationsDi } from "../../../features/conversations/di";
+import { registerConversationRepositoryDi } from "../../repositories/conversations/di";
 import { registerTransactionRepositoryDi } from "../../repositories/transaction/di";
 
 export default class GlobalDIConfig {
@@ -43,6 +44,7 @@ export default class GlobalDIConfig {
     registerUserRepositoryDi();
     registerSettingsRepositoryDi();
     registerTransactionRepositoryDi();
+    registerConversationRepositoryDi();
     /**
      * Utils
      */

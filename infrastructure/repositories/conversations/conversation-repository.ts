@@ -15,8 +15,10 @@ export default class ConversationRepository
     super(ConversationModel);
   }
 
-  async findConversationByUserId(userId: string): Promise<Conversation | null> {
-    return await ConversationModel.findOne({
+  async findConversationByUserId(
+    userId: string
+  ): Promise<Conversation[] | null> {
+    return await ConversationModel.find({
       userId,
     });
   }

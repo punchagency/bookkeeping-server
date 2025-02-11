@@ -7,7 +7,7 @@ export const createConversationSchema = Joi.object({
       content: Joi.string().required(),
       timestamp: Joi.date().required(),
     })
-  ),
+  ).required(),
 });
 
 
