@@ -27,12 +27,14 @@ export default class GetSettingsHandler {
       currentUser._id.toString()
     );
 
+    const defaultVoice = "verse";
+
     const user = await this._userRepository.findById(
       currentUser._id.toString()
     );
 
     return Result.Ok({
-      voice: settings.voice,
+      voice: settings?.voice || defaultVoice,
       fullName: user.fullName,
       email: user.email,
       avatar: `https://api.dicebear.com/9.x/micah/svg?seed=${user.fullName}`,
