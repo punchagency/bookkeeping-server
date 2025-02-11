@@ -6,22 +6,32 @@ import { Result } from "./../../../application/result";
 import { User } from "./../../../domain/entities/user";
 import { EnvConfiguration, logger } from "./../../../utils";
 import MxClient from "./../../../infrastructure/config/packages/mx";
-
+import { ISettingsRepository } from "./../../../infrastructure/repositories/settings/i-settings-repository";
+import { SettingsRepository } from "./../../../infrastructure/repositories/settings/settings-repository";
 @injectable()
 export default class SessionHandler {
-  private readonly _envConfiguration: EnvConfiguration;
   private readonly _mxClient: MxClient;
-
+  private readonly _envConfiguration: EnvConfiguration;
+  private readonly _settingsRepository: ISettingsRepository;
   constructor(
+    @inject(MxClient) mxClient: MxClient,
     @inject(EnvConfiguration.name) envConfiguration: EnvConfiguration,
-    @inject(MxClient) mxClient: MxClient
+    @inject(SettingsRepository.name) settingsRepository: ISettingsRepository
   ) {
     this._mxClient = mxClient;
     this._envConfiguration = envConfiguration;
+    this._settingsRepository = settingsRepository;
   }
 
   public async handle(req: Request, res: Response) {
-    const sessionResult = await this.createSession(req);
+    const currentUser = req.user as User;
+    const settings = await this._settingsRepository.findSettingsByUserId(
+      currentUser._id.toString()
+    );
+
+    const aiVoice = settings?.voice || "verse";
+
+    const sessionResult = await this.createSession(req, aiVoice);
     if (sessionResult.isFailure) {
       return Result.Fail(sessionResult.errors);
     }
@@ -29,7 +39,7 @@ export default class SessionHandler {
     return Result.Ok(sessionResult.value);
   }
 
-  private async createSession(req: Request) {
+  private async createSession(req: Request, aiVoice: string) {
     try {
       const currentUser = req.user as User;
       const mxUserId = currentUser.mxUsers[0].mxUserId;
@@ -350,7 +360,7 @@ export default class SessionHandler {
         "https://api.openai.com/v1/realtime/sessions",
         {
           model: "gpt-4o-realtime-preview-2024-12-17",
-          voice: "verse",
+          voice: aiVoice,
           instructions: systemPrompt,
           tools: [
             {
