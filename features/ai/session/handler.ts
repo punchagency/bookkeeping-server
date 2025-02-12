@@ -239,6 +239,23 @@ export default class SessionHandler {
           { minimumFractionDigits: 2, maximumFractionDigits: 2 }
         )}
         
+        Current Financial Context:
+      
+        - Total Transaction: ${transformedTransactions.length}
+
+
+
+        Analysis Guidelines:
+        
+        1. Focus on actionable insights
+        2. Identify spending patterns and trends
+        3. Detect anomalies and potential issues
+        4. Provide specific recommendations
+        5. Consider seasonal variations
+        6. Analyze category distributions
+        7. Evaluate recurring expenses
+
+
         Spending Analysis:
         - Highest Single Transaction: $${totals.highestTransaction?.amount.toFixed(
           2
