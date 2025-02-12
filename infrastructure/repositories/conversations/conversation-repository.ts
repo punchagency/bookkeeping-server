@@ -1,10 +1,11 @@
 import { injectable } from "tsyringe";
+
+import { Repository } from "../repository";
 import {
   ConversationModel,
   Conversation,
 } from "../../../domain/entities/conversations";
 import { IConversationRepository } from "./i-conversation-repository";
-import { Repository } from "../repository";
 
 @injectable()
 export default class ConversationRepository
