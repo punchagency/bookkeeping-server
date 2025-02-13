@@ -1,8 +1,8 @@
+import { Result } from "tsfluent";
 import { Request, Response } from "express";
 import { injectable, inject } from "tsyringe";
 
 import { logger } from "../../../utils";
-import { Result } from "../../../application/result";
 import { TokenRepository } from "../../../infrastructure/repositories/token/token-repository";
 
 @injectable()
@@ -36,10 +36,10 @@ export default class LogoutHandler {
         sameSite: "strict",
       });
 
-      return Result.Ok({ message: "Logged out successfully" });
+      return Result.ok({ message: "Logged out successfully" });
     } catch (error: any) {
       logger("Logout error:", error);
-      return Result.Fail([{ message: "Logout failed" }]);
+      return Result.fail([{ message: "Logout failed" }]);
     }
   }
 }

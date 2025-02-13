@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
 import { Types } from "mongoose";
+import { Result } from "tsfluent";
 import { Request, Response } from "express";
 import { injectable, inject } from "tsyringe";
 
 import { logger } from "../../../utils";
-import { Result } from "../../../application/result";
 import { TokenType } from "../../../domain/entities/token";
 import { AuthTokenUtils } from "../../../utils/auth-token";
 import { EnvConfiguration } from "../../../utils/env-config";
@@ -35,7 +35,7 @@ export default class RefreshTokenHandler {
     try {
       const refreshToken = req.cookies.refreshToken;
       if (!refreshToken) {
-        return Result.Fail([{ message: "Refresh token not found" }]);
+        return Result.fail([{ message: "Refresh token not found" }]);
       }
 
       const decoded = jwt.verify(
@@ -44,7 +44,7 @@ export default class RefreshTokenHandler {
       ) as jwt.JwtPayload;
 
       if (decoded.type !== TokenType.REFRESH_TOKEN) {
-        return Result.Fail([{ message: "Invalid token type" }]);
+        return Result.fail([{ message: "Invalid token type" }]);
       }
 
       const tokenDoc = await this._tokenRepository.findByRefreshToken(
@@ -52,7 +52,7 @@ export default class RefreshTokenHandler {
       );
 
       if (!tokenDoc) {
-        return Result.Fail([{ message: "Invalid refresh token" }]);
+        return Result.fail([{ message: "Invalid refresh token" }]);
       }
 
       if (tokenDoc.expiresAt < new Date()) {
@@ -60,7 +60,7 @@ export default class RefreshTokenHandler {
           tokenDoc.userId,
           TokenType.REFRESH_TOKEN
         );
-        return Result.Fail([{ message: "Refresh token expired" }]);
+        return Result.fail([{ message: "Refresh token expired" }]);
       }
 
       const user = await this._userRepository.findById(
@@ -68,7 +68,7 @@ export default class RefreshTokenHandler {
       );
 
       if (!user) {
-        return Result.Fail([{ message: "User not found" }]);
+        return Result.fail([{ message: "User not found" }]);
       }
 
       await this._tokenRepository.deleteRefreshTokens(user._id);
@@ -91,17 +91,17 @@ export default class RefreshTokenHandler {
 
       this._authTokenUtils.setRefreshTokenCookie(res, newRefreshToken);
 
-      return Result.Ok<IRefreshTokenResponse>({
+      return Result.ok<IRefreshTokenResponse>({
         accessToken,
       });
     } catch (error: any) {
       logger("Refresh token error:", error);
 
       if (error instanceof jwt.JsonWebTokenError) {
-        return Result.Fail([{ message: "Invalid refresh token" }]);
+        return Result.fail([{ message: "Invalid refresh token" }]);
       }
 
-      return Result.Fail([{ message: "Token refresh failed" }]);
+      return Result.fail([{message: "Token refresh failed" }]);
     }
   }
 }

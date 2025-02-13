@@ -1,13 +1,13 @@
 import dayjs from "dayjs";
 import bcrypt from "bcrypt";
+import { IError, Result } from "tsfluent";
 import { Request, Response } from "express";
 import { injectable, inject } from "tsyringe";
 
 import signupSchema from "./signup.dto";
 import signupEventEmitter from "./event";
-import { Result } from "./../../../application/result";
 import { User } from "./../../../domain/entities/user";
-import { ISignupEvent, SIGNUP_EVENT } from "./event.dto";
+import { ISignupErrorContext, ISignupEvent, SIGNUP_EVENT } from "./event.dto";
 import { AuthTokenUtils } from "./../../../utils/auth-token";
 import { TokenType } from "./../../../domain/entities/token";
 import MxClient from "../../../infrastructure/config/packages/mx";
@@ -41,8 +41,12 @@ export default class SignupHandler {
     const userExists = await this._userRepository.findByEmail(values.email);
 
     if (userExists) {
-      return Result.Fail([{ message: "User already exists" }]).withMetadata({
-        statusCode: 409,
+      return Result.fail<IError, ISignupErrorContext>([
+        { message: "User already exists" },
+      ]).withMetadata({
+        context: {
+          statusCode: 409,
+        },
       });
     }
 
@@ -107,10 +111,14 @@ export default class SignupHandler {
 
       signupEventEmitter.emit(SIGNUP_EVENT, signupEvent);
 
-      return Result.Ok("Account created. Please check your email for the OTP.");
+      return Result.ok("Account created. Please check your email for the OTP.");
     } catch (error: any) {
-      return Result.Fail([{ message: "Error creating mx user" }]).withMetadata({
-        statusCode: 500,
+      return Result.fail<IError, ISignupErrorContext>([
+        { message: "Error creating mx user" },
+      ]).withMetadata({
+        context: {
+          statusCode: 500,
+        },
       });
     }
   }

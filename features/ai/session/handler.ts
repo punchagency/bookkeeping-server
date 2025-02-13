@@ -1,13 +1,12 @@
 import axios from "axios";
 import { Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
-
-import { Result } from "./../../../application/result";
+import { Result } from "tsfluent";
 import { User } from "./../../../domain/entities/user";
 import { EnvConfiguration, logger } from "./../../../utils";
 import MxClient from "./../../../infrastructure/config/packages/mx";
-import { ISettingsRepository } from "./../../../infrastructure/repositories/settings/i-settings-repository";
 import { SettingsRepository } from "./../../../infrastructure/repositories/settings/settings-repository";
+import { ISettingsRepository } from "./../../../infrastructure/repositories/settings/i-settings-repository";
 @injectable()
 export default class SessionHandler {
   private readonly _mxClient: MxClient;
@@ -33,10 +32,10 @@ export default class SessionHandler {
 
     const sessionResult = await this.createSession(req, aiVoice);
     if (sessionResult.isFailure) {
-      return Result.Fail(sessionResult.errors);
+      return Result.fail(sessionResult.errors);
     }
 
-    return Result.Ok(sessionResult.value);
+    return Result.ok(sessionResult.value);
   }
 
   private async createSession(req: Request, aiVoice: string) {
@@ -415,16 +414,16 @@ export default class SessionHandler {
 
       if (response.data.error) {
         console.error("OpenAI Error:", response.data.error);
-        return Result.Fail([{ message: response.data.error.message }]);
+        return Result.fail([{ message: response.data.error.message }]);
       }
 
-      return Result.Ok(response.data);
+      return Result.ok(response.data);
     } catch (error: any) {
       console.error(
         "Session creation error:",
         error.response?.data || error.message
       );
-      return Result.Fail([{ message: "Failed to create session" }]);
+      return Result.fail([{ message: "Failed to create session" }]);
     }
   }
 }
