@@ -1,8 +1,8 @@
+import { Result } from "tsfluent";
 import { Request, Response } from "express";
 import { injectable, inject } from "tsyringe";
 
 import { logger } from "./../../../utils";
-import { Result } from "./../../../application/result";
 import { User } from "./../../../domain/entities/user";
 import MxClient from "./../../../infrastructure/config/packages/mx";
 import { deleteMxUserSchema, IDeleteMxUser } from "./delete-user.dto";
@@ -28,7 +28,7 @@ export default class DeleteMxUserHandler {
 
     if (createMxUserResponse.status !== 204) {
       logger(createMxUserResponse.status);
-      return Result.Fail([{ message: "Error deleting user in MX" }]);
+      return Result.fail([{ message: "Error deleting user in MX" }]);
     }
 
     const currentUser = req.user as User;
@@ -37,7 +37,7 @@ export default class DeleteMxUserHandler {
       mxUsers: currentUser.mxUsers.filter((mx) => mx.mxUserId !== data.userId),
     });
 
-    return Result.Ok(createMxUserResponse.data);
+    return Result.ok(createMxUserResponse.data);
   }
 
   public async handle(req: Request, res: Response) {
@@ -45,9 +45,9 @@ export default class DeleteMxUserHandler {
     const result = await this.deleteMxUser(values, req);
 
     if (result.isFailure) {
-      return Result.Fail(result.errors);
+      return Result.fail(result.errors);
     }
 
-    return Result.Ok(result.value);
+    return Result.ok(result.value);
   }
 }

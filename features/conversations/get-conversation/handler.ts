@@ -1,8 +1,8 @@
+import { Result } from "tsfluent";
 import { Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
 
 import { logger } from "./../../../utils";
-import { Result } from "./../../../application/result";
 import { User } from "./../../../domain/entities/user";
 import { getConversationSchema } from "./get-conversation.dto";
 import ConversationRepository from "../../../infrastructure/repositories/conversations/conversation-repository";
@@ -30,6 +30,6 @@ export default class GetConversationHandler {
 
     logger(conversations);
 
-    return Result.Ok(conversations);
+    return Result.ok(conversations);
   }
 }

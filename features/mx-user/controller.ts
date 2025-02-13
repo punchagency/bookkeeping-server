@@ -71,7 +71,7 @@ export default class MXUserController {
   public async getStatements(req: Request, res: Response) {
     const result = await this._getStatementsHandler.handle(req, res);
     if (result.isFailure) {
-      if (result.metadata && result.metadata.statusCode === 404) {
+      if (result.metadata && result.metadata.context.statusCode === 404) {
         return this._apiResponse.NotFound(
           res,
           "Member id not found. Please connect your bank",

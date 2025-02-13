@@ -1,14 +1,14 @@
+import { Result } from "tsfluent";
 import { Request, Response } from "express";
 import { injectable, inject } from "tsyringe";
 
+import { logger } from "./../../../utils";
 import { User } from "./../../../domain/entities/user";
-import { Result } from "./../../../application/result";
 import { updateSettingsSchema } from "./update-settings.dto";
 import { UserRepository } from "./../../../infrastructure/repositories/user/user-repository";
 import { IUserRepository } from "./../../../infrastructure/repositories/user/i-user-repository";
 import { SettingsRepository } from "../../../infrastructure/repositories/settings/settings-repository";
 import { ISettingsRepository } from "../../../infrastructure/repositories/settings/i-settings-repository";
-import { logger } from "./../../../utils";
 
 @injectable()
 export default class UpdateSettingsHandler {
@@ -58,6 +58,6 @@ export default class UpdateSettingsHandler {
       fullName: updatedUser.fullName,
     };
 
-    return Result.Ok(response);
+    return Result.ok(response);
   }
 }
