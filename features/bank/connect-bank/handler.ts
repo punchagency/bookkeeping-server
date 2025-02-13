@@ -1,8 +1,8 @@
+import { Result } from "tsfluent";
 import { Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
 
 import { logger } from "./../../../utils";
-import { Result } from "./../../../application/result";
 import { User } from "./../../../domain/entities/user";
 import MxClient from "./../../../infrastructure/config/packages/mx";
 
@@ -20,10 +20,10 @@ export default class ConnectBankHandler {
     const result = await this.connectBank(currentUser.mxUsers[0].mxUserId);
 
     if (result.isFailure) {
-      return Result.Fail(result.errors);
+      return Result.fail(result.errors);
     }
 
-    return Result.Ok(result);
+    return Result.ok(result);
   }
 
   private async connectBank(userId: string) {
@@ -44,11 +44,11 @@ export default class ConnectBankHandler {
 
     if (widgetResponse.status !== 200) {
       logger(widgetResponse.status);
-      return Result.Fail([{ message: "Error creating widget in MX" }]);
+      return Result.fail([{ message: "Error creating widget in MX" }]);
     }
 
     logger(widgetResponse.data);
 
-    return Result.Ok(widgetResponse.data);
+    return Result.ok(widgetResponse.data);
   }
 }

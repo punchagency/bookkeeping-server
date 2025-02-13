@@ -9,3 +9,8 @@ export interface IPageOptions {
   page: number;
   recordsPerPage: number;
 }
+
+
+export interface IGetStatementsErrorContext {
+  statusCode: number;
+}

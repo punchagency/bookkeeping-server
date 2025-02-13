@@ -1,11 +1,11 @@
+import { Result } from "tsfluent";
 import { Request, Response } from "express";
 import { injectable, inject } from "tsyringe";
 
-import { disconnectBankDto } from "./disconnect-bank.dto";
 import { logger } from "./../../../utils";
 import { User } from "./../../../domain/entities/user";
+import { disconnectBankDto } from "./disconnect-bank.dto";
 import MxClient from "./../../../infrastructure/config/packages/mx";
-import { Result } from "./../../../application/result";
 
 @injectable()
 export default class DisconnectBankHandler {
@@ -21,10 +21,10 @@ export default class DisconnectBankHandler {
     const result = await this.disconnectBank(req, values.memberGuid);
 
     if (result.isFailure) {
-      return Result.Fail(result.errors);
+      return Result.fail(result.errors);
     }
 
-    return Result.Ok(result.value);
+    return Result.ok(result.value);
   }
 
   private async disconnectBank(req: Request, memberGuid: string) {
@@ -40,9 +40,9 @@ export default class DisconnectBankHandler {
     logger(disconnectRequest.data);
 
     if (disconnectRequest.status !== 204) {
-      return Result.Fail([{ message: "Error disconnecting bank from MX" }]);
+      return Result.fail([{ message: "Error disconnecting bank from MX" }]);
     }
 
-    return Result.Ok(disconnectRequest.data);
+    return Result.ok(disconnectRequest.data);
   }
 }

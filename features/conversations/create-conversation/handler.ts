@@ -1,10 +1,12 @@
+import { Result } from "tsfluent";
+import { v4 as uuidv4 } from "uuid";
 import { Request, Response } from "express";
 import { injectable, inject } from "tsyringe";
-import { v4 as uuidv4 } from "uuid";
-import { logger } from "../../../utils";
 
+
+
+import { logger } from "../../../utils";
 import { User } from "../../../domain/entities/user";
-import { Result } from "./../../../application/result";
 import { createConversationSchema, IMessage } from "./create-conversation.dto";
 import ConversationRepository from "../../../infrastructure/repositories/conversations/conversation-repository";
 import { IConversationRepository } from "./../../../infrastructure/repositories/conversations/i-conversation-repository";
@@ -37,6 +39,6 @@ export default class CreateConversationHandler {
 
     logger(conversations);
 
-    return Result.Ok();
+    return Result.ok();
   }
 }

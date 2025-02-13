@@ -1,7 +1,7 @@
+import { Result } from "tsfluent";
 import { injectable, inject } from "tsyringe";
 import { Request, Response } from "express";
 import { User } from "./../../../domain/entities/user";
-import { Result } from "./../../../application/result";
 import { IUserRepository } from "./../../../infrastructure/repositories/user/i-user-repository";
 import { UserRepository } from "../../../infrastructure/repositories/user/user-repository";
 import { SettingsRepository } from "../../../infrastructure/repositories/settings/settings-repository";
@@ -33,7 +33,7 @@ export default class GetSettingsHandler {
       currentUser._id.toString()
     );
 
-    return Result.Ok({
+    return Result.ok({
       voice: settings?.voice || defaultVoice,
       fullName: user.fullName,
       email: user.email,

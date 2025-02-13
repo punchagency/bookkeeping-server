@@ -1,7 +1,8 @@
+import { Result } from "tsfluent";
 import { Request, Response } from "express";
 import { injectable, inject } from "tsyringe";
+
 import { logger } from "./../../../utils";
-import { Result } from "./../../../application/result";
 import { User } from "./../../../domain/entities/user";
 import MxClient from "./../../../infrastructure/config/packages/mx";
 
@@ -17,10 +18,10 @@ export default class CurrentBankHandler {
     const result = await this.getCurrentBank(req);
 
     if (result.isFailure) {
-      return Result.Fail(result.errors);
+      return Result.fail(result.errors);
     }
 
-    return Result.Ok(result.value);
+    return Result.ok(result.value);
   }
 
   public async getCurrentBank(req: Request) {
@@ -43,9 +44,9 @@ export default class CurrentBankHandler {
         };
       });
 
-      return Result.Ok(connectBanks);
+      return Result.ok(connectBanks);
     } catch (error: any) {
-      return Result.Fail([
+      return Result.fail([
         { message: `Error fetching members from MX: ${error.message}` },
       ]);
     }

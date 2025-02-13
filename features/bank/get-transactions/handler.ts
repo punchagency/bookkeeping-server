@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
+import { Result } from "tsfluent";
 import { Request, Response } from "express";
 import { injectable, inject } from "tsyringe";
-import { Result } from "./../../../application/result";
 import { User } from "./../../../domain/entities/user";
 import { getTransactionsSchema } from "./get-transaction.dto";
 import MxClient from "./../../../infrastructure/config/packages/mx";
@@ -25,10 +25,10 @@ export default class GetTransactionsHandler {
     const result = await this.getTransactions(req);
 
     if (result.isFailure) {
-      return Result.Fail(result.errors);
+      return Result.fail(result.errors);
     }
 
-    return Result.Ok(result.value);
+    return Result.ok(result.value);
   }
 
   private async getTransactions(req: Request) {
@@ -70,7 +70,7 @@ export default class GetTransactionsHandler {
       );
 
     if (paginatedTransactionsResponse.status !== 200) {
-      return Result.Fail([{ message: "Error fetching transactions from MX" }]);
+      return Result.fail([{ message: "Error fetching transactions from MX" }]);
     }
 
     const totals = allTransactions.reduce(
@@ -133,6 +133,6 @@ export default class GetTransactionsHandler {
       totals: formattedTotals,
     };
 
-    return Result.Ok(responseData);
+    return Result.ok(responseData);
   }
 }

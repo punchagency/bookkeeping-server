@@ -1,11 +1,11 @@
+import { IError, Result } from "tsfluent";
 import { Request, Response } from "express";
 import { injectable, inject } from "tsyringe";
 
 import { logger } from "./../../../utils";
 import { User } from "./../../../domain/entities/user";
-import { Result } from "./../../../application/result";
 import MxClient from "./../../../infrastructure/config/packages/mx";
-import { IPageOptions, getStatementsSchema } from "./get-statements.dto";
+import { IGetStatementsErrorContext, IPageOptions, getStatementsSchema } from "./get-statements.dto";
 
 @injectable()
 export default class GetStatementsHandler {
@@ -41,19 +41,24 @@ export default class GetStatementsHandler {
         );
 
       if (statementsResponse.status !== 200) {
-        return Result.Fail([{ message: "Error getting statements from MX" }]);
+        return Result.fail([{ message: "Error getting statements from MX" }]);
       }
 
       logger(statementsResponse.data);
 
-      return Result.Ok(statementsResponse.data);
+      return Result.ok(statementsResponse.data);
     } catch (error: any) {
       logger(error);
-      return Result.Fail([
-        { message: "Member not found. Please connect your bank!" },
-      ]).withMetadata({
-        statusCode: 404,
-      });
+      return (
+        Result.fail < IError,
+        IGetStatementsErrorContext>([
+          { message: "Member not found. Please connect your bank!" },
+        ]).withMetadata({
+          context: {
+            statusCode: 404,
+          },
+        })
+      );
     }
   }
 }
