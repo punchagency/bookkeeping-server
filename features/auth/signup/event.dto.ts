@@ -5,3 +5,8 @@ export interface ISignupEvent {
   email: string;
   otp: string;
 }
+
+
+export interface ISignupErrorContext {
+  statusCode: number;
+}

@@ -5,3 +5,7 @@ export interface IResendOtpEvent {
   email: string;
   otp: string;
 }
+
+export interface IResendOtpErrorContext {
+  statusCode: number;
+}

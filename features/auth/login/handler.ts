@@ -1,10 +1,10 @@
 import bcrypt from "bcrypt";
+import { Result } from "tsfluent";
 import { Request, Response } from "express";
 import { injectable, inject } from "tsyringe";
 
 import loginSchema from "./login.dto";
 import { ILoginResponse } from "./login-response";
-import { Result } from "../../../application/result";
 import { TokenType } from "../../../domain/entities/token";
 import { AuthTokenUtils } from "../../../utils/auth-token";
 import { UserRepository } from "../../../infrastructure/repositories/user/user-repository";
@@ -34,7 +34,7 @@ export default class LoginHandler {
 
       const user = await this._userRepository.findByEmail(values.email);
       if (!user) {
-        return Result.Fail([{ message: "Invalid credentials" }]);
+        return Result.fail([{ message: "Invalid credentials" }]);
       }
 
       const isPasswordValid = await bcrypt.compare(
@@ -42,11 +42,11 @@ export default class LoginHandler {
         user.password
       );
       if (!isPasswordValid) {
-        return Result.Fail([{ message: "Invalid credentials" }]);
+        return Result.fail([{ message: "Invalid credentials" }]);
       }
 
       if (!user.isVerified) {
-        return Result.Fail([{ message: "User is not verified" }]);
+        return Result.fail([{ message: "User is not verified" }]);
       }
 
       await this._tokenRepository.deleteRefreshTokens(user._id);
@@ -68,7 +68,7 @@ export default class LoginHandler {
 
       this._authTokenUtils.setRefreshTokenCookie(res, refreshToken);
 
-      return Result.Ok<ILoginResponse>({
+      return Result.ok<ILoginResponse>({
         accessToken,
         refreshToken,
         user: {
@@ -79,7 +79,7 @@ export default class LoginHandler {
         },
       });
     } catch (error: any) {
-      return Result.Fail([{ message: `${error}` }]);
+      return Result.fail([{ message: `${error}` }]);
     }
   }
 }

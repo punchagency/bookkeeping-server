@@ -57,7 +57,7 @@ export default class AuthController {
     const signupResult = await this._signupHandler.handle(req, res);
 
     if (signupResult.isFailure) {
-      if (signupResult.metadata.statusCode == 409) {
+      if (signupResult.metadata.context.statusCode == 409) {
         return this._apiResponse.Conflict(res, "User already exist", null);
       }
 
@@ -113,6 +113,10 @@ export default class AuthController {
     const resendOtpResult = await this._resendOtpHandler.handle(req, res);
 
     if (resendOtpResult.isFailure) {
+      if (resendOtpResult.metadata.context.statusCode == 404) {
+        return this._apiResponse.NotFound(res, "User not found", null);
+      }
+
       return this._apiResponse.BadRequest(res, resendOtpResult.errors);
     }
 

@@ -1,11 +1,11 @@
 import dayjs from "dayjs";
+import { IError, Result } from "tsfluent";
 import { Request, Response } from "express";
 import { injectable, inject } from "tsyringe";
 
 import resendOtpEventEmitter from "./event";
-import { RESEND_OTP_EVENT } from "./event.dto";
+import { IResendOtpErrorContext, RESEND_OTP_EVENT } from "./event.dto";
 import { resendOtpSchema } from "./resend-otp.dto";
-import { Result } from "../../../application/result";
 import { AuthTokenUtils } from "./../../../utils/auth-token";
 import { TokenType } from "./../../../domain/entities/token";
 import { UserRepository } from "./../../../infrastructure/repositories/user/user-repository";
@@ -37,12 +37,16 @@ export default class ResendOtpHandler {
     const existingUser = await this._userRepository.findByEmail(email);
 
     if (!existingUser) {
-      return Result.Fail([{ message: "User not found" }]).withMetadata({
-        statusCode: 404,
+      return Result.fail<IError, IResendOtpErrorContext>([
+        { message: "User not found" },
+      ]).withMetadata({
+        context: {
+          statusCode: 404,
+        },
       });
     }
     if (existingUser.isVerified) {
-      return Result.Fail([{ message: "User already verified" }]);
+      return Result.fail([{ message: "User already verified" }]);
     }
 
     await this._tokenRepository.deleteAllOtpTokens(existingUser._id);
@@ -60,6 +64,6 @@ export default class ResendOtpHandler {
       otp: createdOtpToken.token,
     });
 
-    return Result.Ok("New OTP sent successfully");
+    return Result.ok("New OTP sent successfully");
   }
 }
