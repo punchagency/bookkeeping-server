@@ -16,7 +16,7 @@ export default class SettingsController {
     @inject(UpdateSettingsHandler.name)
     updateSettingsHandler: UpdateSettingsHandler,
     @inject(GetSettingsHandler.name)
-    getSettingsHandler: GetSettingsHandler,
+    getSettingsHandler: GetSettingsHandler, 
     @inject(ApiResponse.name) apiResponse: IApiResponse
   ) {
     this._apiResponse = apiResponse;

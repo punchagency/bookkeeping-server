@@ -30,12 +30,7 @@ export default class SessionHandler {
 
     const aiVoice = settings?.voice || "verse";
 
-    const sessionResult = await this.createSession(req, aiVoice);
-    if (sessionResult.isFailure) {
-      return Result.fail(sessionResult.errors);
-    }
-
-    return Result.ok(sessionResult.value);
+    return await this.createSession(req, aiVoice);
   }
 
   private async createSession(req: Request, aiVoice: string) {
