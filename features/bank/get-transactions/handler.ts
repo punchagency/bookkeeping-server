@@ -93,19 +93,17 @@ export default class GetTransactionsHandler {
       return Result.fail([{ message: "Error fetching transactions from MX" }]);
     }
 
-    // Calculate time-range based totals if days parameter is present
     let timeRangeExpenses: TimeRangeExpenses | null = null;
     if (days) {
       const startDate =
         days === "all"
-          ? new Date(0) // Beginning of time
+          ? new Date(0)
           : new Date(Date.now() - parseInt(days) * 24 * 60 * 60 * 1000);
 
       const filteredTransactions = allTransactions.filter(
         (t: MXTransaction) => t.is_expense && new Date(t.date) >= startDate
       );
 
-      // Calculate category totals with proper type assertions
       const categoryTotals = filteredTransactions.reduce(
         (acc, t: MXTransaction) => {
           const category = t.top_level_category;
@@ -117,12 +115,10 @@ export default class GetTransactionsHandler {
         {} as Record<string, number>
       );
 
-      // Calculate total expenses for the time range
       const totalExpensesInRange: number = (
         Object.values(categoryTotals) as number[]
       ).reduce((sum: number, amount: number) => sum + amount, 0);
 
-      // Calculate percentages and sort by amount
       const categoryBreakdown: CategoryBreakdown[] = Object.entries(
         categoryTotals
       )
@@ -200,7 +196,7 @@ export default class GetTransactionsHandler {
         totalPages: paginatedTransactionsResponse.data.pagination.total_pages,
       },
       totals: formattedTotals,
-      timeRangeExpenses, // This will be null if no days parameter was provided
+      timeRangeExpenses,
     };
 
     return Result.ok(responseData);
