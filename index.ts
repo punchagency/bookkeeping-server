@@ -1,9 +1,10 @@
-import "express-async-errors";
 import "reflect-metadata";
-import Server from "./server";
+import "express-async-errors";
 import { container } from "tsyringe";
-import GlobalDIConfig from "./infrastructure/config/di/global-di-config";
+
+import Server from "./server";
 import "./infrastructure/events";
+import GlobalDIConfig from "./infrastructure/config/di/global-di-config";
 
 GlobalDIConfig.registerAllServices();
 

@@ -1,9 +1,10 @@
 import { Result } from "tsfluent";
 import { injectable, inject } from "tsyringe";
 import { Request, Response } from "express";
+
 import { User } from "./../../../domain/entities/user";
-import { IUserRepository } from "./../../../infrastructure/repositories/user/i-user-repository";
 import { UserRepository } from "../../../infrastructure/repositories/user/user-repository";
+import { IUserRepository } from "./../../../infrastructure/repositories/user/i-user-repository";
 import { SettingsRepository } from "../../../infrastructure/repositories/settings/settings-repository";
 import { ISettingsRepository } from "../../../infrastructure/repositories/settings/i-settings-repository";
 

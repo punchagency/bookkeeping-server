@@ -1,7 +1,8 @@
 import { injectable } from "tsyringe";
-import { UserModel, User } from "../../../domain/entities/user";
+
 import { Repository } from "../repository";
 import { IUserRepository } from "./i-user-repository";
+import { UserModel, User } from "../../../domain/entities/user";
 
 @injectable()
 export class UserRepository

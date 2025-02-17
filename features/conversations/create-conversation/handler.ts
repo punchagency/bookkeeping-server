@@ -3,8 +3,6 @@ import { v4 as uuidv4 } from "uuid";
 import { Request, Response } from "express";
 import { injectable, inject } from "tsyringe";
 
-
-
 import { logger } from "../../../utils";
 import { User } from "../../../domain/entities/user";
 import { createConversationSchema, IMessage } from "./create-conversation.dto";

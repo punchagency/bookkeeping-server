@@ -8,7 +8,6 @@ import LogoutHandler from "./logout/handler";
 import VerifyOtpHandler from "./verify-otp/handler";
 import ResendOtpHandler from "./resend-otp/handler";
 import RefreshTokenHandler from "./refresh-token/handler";
-
 import ApiResponse from "./../../application/response/response";
 import { IApiResponse } from "./../../application/response/i-response";
 
