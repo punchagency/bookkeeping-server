@@ -2,6 +2,7 @@ import "reflect-metadata";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import { container } from "tsyringe";
+
 import {
   EnvConfiguration,
   logger,

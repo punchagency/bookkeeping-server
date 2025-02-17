@@ -1,4 +1,5 @@
 import { container } from "tsyringe";
+
 import SendgridService from "./";
 
 export const registerSendgridServiceDi = () => {

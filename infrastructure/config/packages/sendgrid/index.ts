@@ -1,5 +1,6 @@
 import { inject, injectable } from "tsyringe";
 import sgMail from "@sendgrid/mail";
+
 import { Result } from "./../../../../application/result";
 import { EnvConfiguration, logger } from "./../../../../utils";
 @injectable()

@@ -4,8 +4,8 @@ import { injectable, inject } from "tsyringe";
 
 import { verifyOtpSchema } from "./verify-otp.dto";
 import { TokenType } from "../../../domain/entities/token";
-import { TokenRepository } from "./../../../infrastructure/repositories/token/token-repository";
 import { UserRepository } from "./../../../infrastructure/repositories/user/user-repository";
+import { TokenRepository } from "./../../../infrastructure/repositories/token/token-repository";
 
 @injectable()
 export default class VerifyOtpHandler {

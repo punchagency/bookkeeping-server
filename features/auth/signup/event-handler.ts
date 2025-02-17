@@ -1,4 +1,5 @@
 import { container } from "tsyringe";
+
 import { logger } from "../../../utils";
 import signupEventEmitter from "./event";
 import { ISignupEvent, SIGNUP_EVENT } from "./event.dto";

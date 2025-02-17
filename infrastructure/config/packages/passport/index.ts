@@ -5,9 +5,10 @@ import {
   StrategyOptions,
 } from "passport-jwt";
 import { container } from "tsyringe";
+
+import { logger } from "../../../../utils";
 import { EnvConfiguration } from "../../../../utils/env-config";
 import { UserRepository } from "../../../repositories/user/user-repository";
-import { logger } from "../../../../utils";
 
 const setupPassport = () => {
   const envConfig = container.resolve(EnvConfiguration);

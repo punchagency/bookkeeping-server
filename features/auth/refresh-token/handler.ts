@@ -16,8 +16,8 @@ import { TokenRepository } from "../../../infrastructure/repositories/token/toke
 export default class RefreshTokenHandler {
   private readonly _envConfig: EnvConfiguration;
   private readonly _userRepository: UserRepository;
-  private readonly _tokenRepository: TokenRepository;
   private readonly _authTokenUtils: AuthTokenUtils;
+  private readonly _tokenRepository: TokenRepository;
 
   constructor(
     @inject(EnvConfiguration.name) envConfig: EnvConfiguration,

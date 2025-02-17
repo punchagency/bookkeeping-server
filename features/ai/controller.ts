@@ -21,8 +21,6 @@ export default class AiController {
   public async createSession(req: Request, res: Response) {
     const result = await this._sessionHandler.handle(req, res);
 
-    console.log(result);
-
     if (result.isFailure) {
       return this._apiResponse.BadRequest(res, result.errors);
     }

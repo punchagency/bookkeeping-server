@@ -1,7 +1,8 @@
 import axios from "axios";
+import { Result } from "tsfluent";
 import { Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
-import { Result } from "tsfluent";
+
 import { User } from "./../../../domain/entities/user";
 import { EnvConfiguration, logger } from "./../../../utils";
 import MxClient from "./../../../infrastructure/config/packages/mx";

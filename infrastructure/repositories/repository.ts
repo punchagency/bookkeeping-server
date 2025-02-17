@@ -1,6 +1,7 @@
-import { ReturnModelType } from "@typegoose/typegoose";
-import { IRepository } from "./i-repository";
 import { Types } from "mongoose";
+import { ReturnModelType } from "@typegoose/typegoose";
+
+import { IRepository } from "./i-repository";
 
 export class Repository<T> implements IRepository<T> {
   private readonly model: ReturnModelType<any>;
