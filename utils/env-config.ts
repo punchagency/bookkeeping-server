@@ -21,7 +21,8 @@ export class EnvConfiguration {
   public readonly SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
   public readonly TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
   public readonly TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
-  public readonly TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
+  public readonly TWILIO_PHONE_NUMBER = process.env
+    .TWILIO_PHONE_NUMBER as string;
 }
 
 export const registerEnvConfigDi = () => {

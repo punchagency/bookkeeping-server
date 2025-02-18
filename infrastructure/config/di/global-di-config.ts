@@ -1,6 +1,6 @@
 import { registerMxClientDi } from "../packages/mx/di";
 import { registerAiDi } from "../../../features/ai/di";
-import { registerTwilioDi } from "../packages/twillo/di";
+import { registerTwilioDi } from "../packages/twilio/di";
 import { registerBaseDi } from "../../../features/base/di";
 import { registerBankDi } from "../../../features/bank/di";
 import { registerAuthDi } from "../../../features/auth/di/di";
@@ -35,10 +35,10 @@ export default class GlobalDIConfig {
     /**
      * External Services
      */
-    registerTwilioDi();
     registerMxClientDi();
     registerOpenAiClientDi();
     registerSendgridServiceDi();
+    registerTwilioDi();
 
     /**
      * Repositories

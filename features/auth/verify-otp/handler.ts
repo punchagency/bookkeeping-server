@@ -51,10 +51,17 @@ export default class VerifyOtpHandler {
       return Result.fail([{ message: "User already verified" }]);
     }
 
-    await this._userRepository.update(otpExists.userId, {
-      isVerified: true,
-    });
-
+    if (user.verificationMethod === "EMAIL") {
+      await this._userRepository.update(otpExists.userId, {
+        isVerified: true,
+        isEmailVerified: true,
+      });
+    } else {
+      await this._userRepository.update(otpExists.userId, {
+        isVerified: true,
+        isPhoneVerified: true,
+      });
+    }
     await this._tokenRepository.delete(otpExists.id);
 
     return Result.ok("OTP verified successfully");

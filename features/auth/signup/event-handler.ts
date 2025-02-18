@@ -1,16 +1,18 @@
 import { container } from "tsyringe";
 
-import { logger } from "../../../utils";
 import signupEventEmitter from "./event";
 import { ISignupEvent, SIGNUP_EVENT } from "./event.dto";
+import { logger, EnvConfiguration } from "../../../utils";
+import TwilioService from "../../../infrastructure/config/packages/twilio/";
 import SendgridService from "../../../infrastructure/config/packages/sendgrid";
 
+const envConfiguration = container.resolve(EnvConfiguration);
+const twilioService = container.resolve(TwilioService);
 const sendgridService = container.resolve(SendgridService);
-
 signupEventEmitter.on(SIGNUP_EVENT, async (data: ISignupEvent) => {
   try {
     logger("Handling signup event", data);
-    const { fullName, otp, email } = data;
+    const { fullName, otp, email, phoneNumber, otpDeliveryMethod } = data;
 
     const emailBody = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -26,15 +28,33 @@ signupEventEmitter.on(SIGNUP_EVENT, async (data: ISignupEvent) => {
       </div>
     `;
 
-    await sendgridService.sendEmail(
-      email,
-      "Verify Your Account - Bookkeeping",
-      emailBody
-    );
+    logger(phoneNumber);
 
-    logger(`Verification email sent to ${email}`);
+    const smsBody = `
+      Your OTP is ${otp}
+    `;
+
+    if (otpDeliveryMethod === "EMAIL") {
+      await sendgridService.sendEmail(
+        email,
+        "Verify Your Account - Bookkeeping",
+        emailBody
+      );
+    } else {
+      await twilioService.client.messages.create({
+        body: smsBody,
+        from: envConfiguration.TWILIO_PHONE_NUMBER,
+        to: phoneNumber,
+      });
+    }
+
+    logger(
+      `OTP sent to ${otpDeliveryMethod} ${
+        otpDeliveryMethod === "EMAIL" ? email : phoneNumber
+      }`
+    );
   } catch (error) {
-    logger("Error sending verification email:", error);
+    logger("Error sending OTP:", error);
   }
 });
 
