@@ -1,5 +1,6 @@
 import { registerMxClientDi } from "../packages/mx/di";
 import { registerAiDi } from "../../../features/ai/di";
+import { registerTwilioDi } from "../packages/twillo/di";
 import { registerBaseDi } from "../../../features/base/di";
 import { registerBankDi } from "../../../features/bank/di";
 import { registerAuthDi } from "../../../features/auth/di/di";
@@ -12,16 +13,17 @@ import { registerUserRepositoryDi } from "../../repositories/user/di";
 import { registerSettingsDi } from "./../../../features/settings/di/di";
 import { registerTokenRepositoryDi } from "../../repositories/token/di";
 import { registerApiResponseDi } from "../../../application/response/di";
-import { registerSettingsRepositoryDi } from "../../repositories/settings/di";
 import { registerConversationsDi } from "../../../features/conversations/di";
-import { registerConversationRepositoryDi } from "../../repositories/conversations/di";
+import { registerSettingsRepositoryDi } from "../../repositories/settings/di";
 import { registerTransactionRepositoryDi } from "../../repositories/transaction/di";
+import { registerConversationRepositoryDi } from "../../repositories/conversations/di";
 
 export default class GlobalDIConfig {
   public static registerAllServices() {
     /**
      * Application Services || Features
      */
+
     registerAiDi();
     registerBaseDi();
     registerAuthDi();
@@ -33,27 +35,31 @@ export default class GlobalDIConfig {
     /**
      * External Services
      */
+    registerTwilioDi();
+    registerMxClientDi();
     registerOpenAiClientDi();
     registerSendgridServiceDi();
-    registerMxClientDi();
 
     /**
      * Repositories
      */
-    registerTokenRepositoryDi();
     registerUserRepositoryDi();
+    registerTokenRepositoryDi();
     registerSettingsRepositoryDi();
     registerTransactionRepositoryDi();
     registerConversationRepositoryDi();
+
     /**
      * Utils
      */
-    registerAuthTokenUtilsDi();
+
     registerEnvConfigDi();
+    registerAuthTokenUtilsDi();
 
     /**
      * Application Behaviors
      */
+
     registerApiResponseDi();
   }
 }

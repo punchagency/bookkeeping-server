@@ -51,6 +51,7 @@
     "reflect-metadata": "^0.2.2",
     "tsfluent": "^1.5.2",
     "tsyringe": "^4.8.0",
+    "twilio": "^5.4.4",
     "uuid": "^11.0.5"
   }
 }
