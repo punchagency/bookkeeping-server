@@ -19,6 +19,9 @@ export class EnvConfiguration {
   public readonly OPENAI_API_KEY = process.env.OPENAI_API_KEY;
   public readonly FROM_EMAIL_ADDRESS = process.env.FROM_EMAIL_ADDRESS;
   public readonly SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
+  public readonly TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
+  public readonly TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
+  public readonly TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
 }
 
 export const registerEnvConfigDi = () => {
