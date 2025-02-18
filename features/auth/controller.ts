@@ -64,11 +64,7 @@ export default class AuthController {
       return this._apiResponse.BadRequest(res, errors);
     }
 
-    return this._apiResponse.Created(
-      res,
-      "Account created. Please check your email for the OTP.",
-      null
-    );
+    return this._apiResponse.Created(res, signupResult.value.toString(), null);
   }
 
   public async logout(req: Request, res: Response) {
@@ -112,7 +108,7 @@ export default class AuthController {
     const resendOtpResult = await this._resendOtpHandler.handle(req, res);
 
     if (resendOtpResult.isFailure) {
-      if (resendOtpResult.metadata.context.statusCode == 404) {
+      if (resendOtpResult?.metadata?.context?.statusCode == 404) {
         return this._apiResponse.NotFound(res, "User not found", null);
       }
 

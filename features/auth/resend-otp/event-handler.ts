@@ -1,15 +1,18 @@
 import { container } from "tsyringe";
-import { logger } from "../../../utils";
+import { logger, EnvConfiguration } from "../../../utils";
 import resendOtpEventEmitter from "./event";
 import { IResendOtpEvent, RESEND_OTP_EVENT } from "./event.dto";
-import SendgridService from "../../../infrastructure/config/packages/sendgrid";
+import SendgridService from "./../../../infrastructure/config/packages/sendgrid";
+import TwilioService from "../../../infrastructure/config/packages/twilio/";
 
+const envConfiguration = container.resolve(EnvConfiguration);
+const twilioService = container.resolve(TwilioService);
 const sendgridService = container.resolve(SendgridService);
 
 resendOtpEventEmitter.on(RESEND_OTP_EVENT, async (data: IResendOtpEvent) => {
   try {
     logger("Handling resend OTP event", data);
-    const { fullName, otp, email } = data;
+    const { fullName, otp, email, phoneNumber, otpDeliveryMethod } = data;
 
     const emailBody = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -25,15 +28,31 @@ resendOtpEventEmitter.on(RESEND_OTP_EVENT, async (data: IResendOtpEvent) => {
       </div>
     `;
 
-    await sendgridService.sendEmail(
-      email,
-      "Your New OTP Code - Bookkeeping",
-      emailBody
-    );
+    const smsBody = `
+      Your OTP is ${otp}
+    `;
 
-    logger(`New OTP email sent to ${email}`);
+    if (otpDeliveryMethod === "EMAIL") {
+      await sendgridService.sendEmail(
+        email,
+        "Your New OTP Code - Bookkeeping",
+        emailBody
+      );
+    } else {
+      await twilioService.client.messages.create({
+        body: smsBody,
+        from: envConfiguration.TWILIO_PHONE_NUMBER,
+        to: phoneNumber,
+      });
+    }
+
+    logger(
+      `New OTP sent to ${otpDeliveryMethod} ${
+        otpDeliveryMethod === "EMAIL" ? email : phoneNumber
+      }`
+    );
   } catch (error: any) {
-    logger("Error sending resend OTP email:", error);
+    logger("Error sending OTP:", error);
   }
 });
 

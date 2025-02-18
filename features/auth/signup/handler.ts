@@ -52,10 +52,15 @@ export default class SignupHandler {
 
     const hashedPassword = await bcrypt.hash(values.password, 10);
 
+    const otpDeliveryMethod =
+      values.otpDeliveryMethod === "EMAIL" ? "email" : "phone";
+
     const userToCreate: Partial<User> = {
       email: values.email,
+      phoneNumber: values.phoneNumber,
       password: hashedPassword,
       fullName: values.fullName,
+      verificationMethod: values.otpDeliveryMethod,
     };
 
     const user = await this._userRepository.create(userToCreate as User);
@@ -106,12 +111,16 @@ export default class SignupHandler {
       const signupEvent: ISignupEvent = {
         fullName: user.fullName,
         email: user.email,
+        phoneNumber: user.phoneNumber,
         otp: createdOtpToken.token,
+        otpDeliveryMethod: values.otpDeliveryMethod as "EMAIL" | "PHONE_NUMBER",
       };
 
       signupEventEmitter.emit(SIGNUP_EVENT, signupEvent);
 
-      return Result.ok("Account created. Please check your email for the OTP.");
+      return Result.ok(
+        `Account created. Please check your ${otpDeliveryMethod} for the OTP.`
+      );
     } catch (error: any) {
       return Result.fail<IError, ISignupErrorContext>([
         { message: "Error creating mx user" },

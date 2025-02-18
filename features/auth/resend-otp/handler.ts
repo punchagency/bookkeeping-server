@@ -4,7 +4,11 @@ import { Request, Response } from "express";
 import { injectable, inject } from "tsyringe";
 
 import resendOtpEventEmitter from "./event";
-import { IResendOtpErrorContext, RESEND_OTP_EVENT } from "./event.dto";
+import {
+  IResendOtpErrorContext,
+  IResendOtpEvent,
+  RESEND_OTP_EVENT,
+} from "./event.dto";
 import { resendOtpSchema } from "./resend-otp.dto";
 import { AuthTokenUtils } from "./../../../utils/auth-token";
 import { TokenType } from "./../../../domain/entities/token";
@@ -30,11 +34,18 @@ export default class ResendOtpHandler {
   public async handle(req: Request, res: Response) {
     const values = await resendOtpSchema.validateAsync(req.body);
 
-    return this.resendOtp(values.email);
+    if (values.email) {
+      return this.resendOtp(values.email, "EMAIL");
+    }
+
+    return this.resendOtp(values.phoneNumber, "PHONE_NUMBER");
   }
 
-  public async resendOtp(email: string) {
-    const existingUser = await this._userRepository.findByEmail(email);
+  public async resendOtp(value: string, optType: "EMAIL" | "PHONE_NUMBER") {
+    const existingUser =
+      optType === "EMAIL"
+        ? await this._userRepository.findByEmail(value)
+        : await this._userRepository.findByPhoneNumber(value);
 
     if (!existingUser) {
       return Result.fail<IError, IResendOtpErrorContext>([
@@ -45,8 +56,26 @@ export default class ResendOtpHandler {
         },
       });
     }
+
     if (existingUser.isVerified) {
       return Result.fail([{ message: "User already verified" }]);
+    }
+
+    console.log(existingUser);
+
+    if (optType === "EMAIL" && existingUser.verificationMethod !== "EMAIL") {
+      return Result.fail([
+        { message: "User verification method is not email" },
+      ]);
+    }
+
+    if (
+      optType === "PHONE_NUMBER" &&
+      existingUser.verificationMethod !== "PHONE_NUMBER"
+    ) {
+      return Result.fail([
+        { message: "User verification method is not phone number" },
+      ]);
     }
 
     await this._tokenRepository.deleteAllOtpTokens(existingUser._id);
@@ -61,8 +90,10 @@ export default class ResendOtpHandler {
     resendOtpEventEmitter.emit(RESEND_OTP_EVENT, {
       fullName: existingUser.fullName,
       email: existingUser.email,
+      phoneNumber: existingUser.phoneNumber,
       otp: createdOtpToken.token,
-    });
+      otpDeliveryMethod: optType,
+    } as IResendOtpEvent);
 
     return Result.ok("New OTP sent successfully");
   }

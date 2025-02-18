@@ -14,7 +14,9 @@ export class UserRepository
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return await UserModel.findOne({ email }).exec();
+    return await UserModel.findOne({ email })
+      .select("-password +verificationMethod")
+      .exec();
   }
 
   async updatePassword(
@@ -25,6 +27,12 @@ export class UserRepository
       userId,
       { password: hashedPassword },
       { new: true }
-    ).exec();
+    );
+  }
+
+  async findByPhoneNumber(phoneNumber: string): Promise<User | null> {
+    return await UserModel.findOne({ phoneNumber: `+${phoneNumber}` })
+      .select("-password +verificationMethod")
+      .exec();
   }
 }
