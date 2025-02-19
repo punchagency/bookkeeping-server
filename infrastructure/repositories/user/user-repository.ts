@@ -15,7 +15,7 @@ export class UserRepository
 
   async findByEmail(email: string): Promise<User | null> {
     return await UserModel.findOne({ email })
-      .select("-password +verificationMethod")
+      .select("+password +verificationMethod")
       .exec();
   }
 

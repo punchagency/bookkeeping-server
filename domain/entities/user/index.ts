@@ -15,31 +15,31 @@ enum VerificationMethod {
 class User {
   _id?: Types.ObjectId;
 
-  @prop({ required: true })
+  @prop({ required: true, select: true })
   public fullName: string;
 
-  @prop({ required: true, unique: true })
+  @prop({ required: true, unique: true, select: true })
   public email: string;
 
-  @prop({ required: true, unique: true })
+  @prop({ required: true, unique: true, select: true })
   public phoneNumber: string;
 
-  @prop({ required: true })
+  @prop({ required: true, select: true })
   public password: string;
 
-  @prop({ required: true, default: false })
+  @prop({ required: true, default: false, select: true })
   public isVerified: boolean; /**Phone number or email verification will determine this */
 
   @prop({ required: false, enum: VerificationMethod, select: false })
   public verificationMethod: VerificationMethod;
 
-  @prop({ required: false, default: false })
+  @prop({ required: false, default: false, select: true })
   public isEmailVerified: boolean;
 
-  @prop({ required: false, default: false })
+  @prop({ required: false, default: false, select: true })
   public isPhoneVerified: boolean;
 
-  @prop({ type: () => [Object], default: [] })
+  @prop({ type: () => [Object], default: [], select: true })
   public mxUsers: Array<{
     id: string;
     mxUserId: string;

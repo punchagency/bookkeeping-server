@@ -9,6 +9,7 @@ import { TokenType } from "../../../domain/entities/token";
 import { AuthTokenUtils } from "../../../utils/auth-token";
 import { UserRepository } from "../../../infrastructure/repositories/user/user-repository";
 import { TokenRepository } from "../../../infrastructure/repositories/token/token-repository";
+import { logger } from "../../../utils";
 
 @injectable()
 export default class LoginHandler {
@@ -79,6 +80,7 @@ export default class LoginHandler {
         },
       });
     } catch (error: any) {
+      logger(error);
       return Result.fail([{ message: `${error}` }]);
     }
   }
