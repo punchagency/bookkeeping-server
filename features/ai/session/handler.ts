@@ -351,6 +351,22 @@ export default class SessionHandler {
         `
           )
           .join("\n\n")}
+          
+
+        CORE VISUALIZATION BEHAVIOR:
+        1. AUTOMATICALLY include visualizations in your responses when discussing:
+          - Spending patterns
+          - Category breakdowns
+          - Income vs expenses
+          - Transaction trends
+          - Merchant analysis
+          - Any numerical comparisons
+        2. Don't wait for users to request charts - be proactive!
+        3. Start your visualization responses with phrases like:
+          - "Let me show you this visually..."
+          - "Here's a chart that helps illustrate this..."
+          - "This visualization will help you understand..."
+          - "I've created a visual breakdown for you..."
  
 
         IMPORTANT VISUALIZATION RULES:
