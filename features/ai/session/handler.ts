@@ -351,40 +351,56 @@ export default class SessionHandler {
         `
           )
           .join("\n\n")}
+ 
 
-        Visualization Capabilities:
-        You can create various types of charts to visualize financial data. When creating visualizations:
-        1. Choose the most appropriate chart type for the data:
-           - "pie" or "donut" for showing proportions and percentages
-           - "bar" for comparing categories
-           - "line" for showing trends over time
-           - "scatter" for showing relationships
-           - "area" for cumulative values over time
-        
-        2. Format the chart data in the following structure:
-           {
-             type: "chart_type",
-             data: [{ label: "Label", value: number, category?: string, date?: string }],
-             options: {
-               title: "Chart Title",
-               xAxis?: "X-Axis Label",
-               yAxis?: "Y-Axis Label",
-               colors?: ["#hex1", "#hex2"],
-               height?: number,
-               width?: number
-             }
-           }
+        IMPORTANT VISUALIZATION RULES:
+        1. ALWAYS respond with a visualization when users request ANY kind of chart, graph, or visual representation
+        2. ALWAYS format visualization data using this exact JSON structure:
 
-        3. Include charts when:
-           - Comparing spending across categories
-           - Showing income vs expenses over time
-           - Visualizing spending trends
-           - Displaying budget allocations
-           - Analyzing merchant frequency
-           - Demonstrating financial progress
 
-        4. Always accompany charts with textual explanations to help users understand the insights.
+        {
+          type: "chart_type",  // Must be one of: "pie", "donut", "bar", "line", "scatter", "area"
+          data: [
+            {
+              label: string,
+              value: number,
+              category?: string,
+              date?: string
+            }
+          ],
+          options: {
+            title: string,
+            xAxis?: string,
+            yAxis?: string,
+            colors?: string[],
+            height?: number,
+            width?: number
+          }
+        }
 
+        3. NEVER skip providing the JSON data when discussing trends, comparisons, or analyses
+        4. ALWAYS include at least 5 data points in visualizations
+        5. ALWAYS use proper JSON syntax with quotes around property names
+        6. NEVER omit required fields in the JSON structure
+
+        Example correct response when asked about spending trends:
+        "Here's a visualization of your monthly spending:
+        {
+          "type": "line",
+          "data": [
+            {"label": "January", "value": 2500, "date": "2024-01"},
+            {"label": "February", "value": 2300, "date": "2024-02"},
+            {"label": "March", "value": 2700, "date": "2024-03"}
+          ],
+          "options": {
+            "title": "Monthly Spending Trends",
+            "xAxis": "Month",
+            "yAxis": "Amount ($)",
+            "colors": ["#4299E1"]
+          }
+        }"
+
+       
         Interaction Style:
         - Be friendly and approachable
         - Use conversational language
@@ -407,6 +423,51 @@ export default class SessionHandler {
           voice: aiVoice,
           instructions: systemPrompt,
           tools: [
+            {
+              type: "function",
+              name: "create_visualization",
+              description: "Create a visualization of financial data",
+              parameters: {
+                type: "object",
+                required: ["type", "data", "options"],
+                properties: {
+                  type: {
+                    type: "string",
+                    enum: ["pie", "donut", "bar", "line", "scatter", "area"],
+                    description: "The type of chart to create",
+                  },
+                  data: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      required: ["label", "value"],
+                      properties: {
+                        label: { type: "string" },
+                        value: { type: "number" },
+                        category: { type: "string" },
+                        date: { type: "string" },
+                      },
+                    },
+                    minItems: 5,
+                  },
+                  options: {
+                    type: "object",
+                    required: ["title"],
+                    properties: {
+                      title: { type: "string" },
+                      xAxis: { type: "string" },
+                      yAxis: { type: "string" },
+                      colors: {
+                        type: "array",
+                        items: { type: "string" },
+                      },
+                      height: { type: "number" },
+                      width: { type: "number" },
+                    },
+                  },
+                },
+              },
+            },
             {
               type: "function",
               name: "analyze_transactions",
