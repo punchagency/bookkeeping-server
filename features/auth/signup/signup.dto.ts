@@ -5,7 +5,7 @@ const signupSchema = Joi.object({
   email: Joi.string().email().required(),
   phoneNumber: Joi.string().required(),
   password: Joi.string().min(8).max(30).required(),
-  otpDeliveryMethod: Joi.string().valid("EMAIL", "PHONE_NUMBER").required(),
+  otpDeliveryMethod: Joi.string().valid("EMAIL").optional().default("EMAIL"),
 });
 
 export default signupSchema;
