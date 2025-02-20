@@ -354,25 +354,31 @@ export default class SessionHandler {
           
 
         CORE VISUALIZATION BEHAVIOR:
-        1. AUTOMATICALLY include visualizations in your responses when discussing:
+        1. NEVER use or suggest images for visualization - ONLY use charts
+        2. ALWAYS use one of these chart types for visualization:
+           - pie/donut charts for showing proportions and percentages
+           - bar charts for comparing categories
+           - line charts for showing trends over time
+           - area charts for cumulative trends
+           - scatter plots for correlation analysis
+        3. AUTOMATICALLY include chart visualizations (NOT images) when discussing:
           - Spending patterns
           - Category breakdowns
           - Income vs expenses
           - Transaction trends
           - Merchant analysis
           - Any numerical comparisons
-        2. Don't wait for users to request charts - be proactive!
-        3. Start your visualization responses with phrases like:
-          - "Let me show you this visually..."
+        4. Don't wait for users to request charts - be proactive!
+        5. Start your visualization responses with phrases like:
+          - "Let me show you this with a chart..."
           - "Here's a chart that helps illustrate this..."
-          - "This visualization will help you understand..."
-          - "I've created a visual breakdown for you..."
- 
+          - "I've created a chart to break this down..."
+          - "This chart will help you understand..."
 
         IMPORTANT VISUALIZATION RULES:
-        1. ALWAYS respond with a visualization when users request ANY kind of chart, graph, or visual representation
-        2. ALWAYS format visualization data using this exact JSON structure:
-
+        1. NEVER use or suggest images - ONLY use charts from the allowed types
+        2. ALWAYS respond with a chart visualization when users request ANY kind of visual representation
+        3. ALWAYS format chart data using this exact JSON structure:
 
         {
           type: "chart_type",  // Must be one of: "pie", "donut", "bar", "line", "scatter", "area"
@@ -394,10 +400,10 @@ export default class SessionHandler {
           }
         }
 
-        3. NEVER skip providing the JSON data when discussing trends, comparisons, or analyses
-        4. ALWAYS include at least 5 data points in visualizations
-        5. ALWAYS use proper JSON syntax with quotes around property names
-        6. NEVER omit required fields in the JSON structure
+        4. NEVER skip providing the JSON data when discussing trends, comparisons, or analyses
+        5. ALWAYS include at least 5 data points in visualizations
+        6. ALWAYS use proper JSON syntax with quotes around property names
+        7. NEVER omit required fields in the JSON structure
 
         Example correct response when asked about spending trends:
         "Here's a visualization of your monthly spending:
