@@ -5,18 +5,23 @@ import { injectable, inject } from "tsyringe";
 
 import { logger } from "../../../utils";
 import { User } from "../../../domain/entities/user";
+import OpenAiClient from "../../../infrastructure/config/packages/openai";
 import { createConversationSchema, IMessage } from "./create-conversation.dto";
 import ConversationRepository from "../../../infrastructure/repositories/conversations/conversation-repository";
 import { IConversationRepository } from "./../../../infrastructure/repositories/conversations/i-conversation-repository";
 
 @injectable()
 export default class CreateConversationHandler {
+  private readonly _openAiClient: OpenAiClient;
   private readonly _conversationRepository: IConversationRepository;
 
   constructor(
     @inject(ConversationRepository)
-    conversationRepository: IConversationRepository
+    conversationRepository: IConversationRepository,
+    @inject(OpenAiClient)
+    openAiClient: OpenAiClient
   ) {
+    this._openAiClient = openAiClient;
     this._conversationRepository = conversationRepository;
   }
 
@@ -26,7 +31,12 @@ export default class CreateConversationHandler {
 
     logger(values);
 
-    const conversationTitle = `conv_${uuidv4()}`;
+    const messages = values.messages as IMessage[];
+
+    const conversationTitle =
+      await this._openAiClient.generateConversationTitle(messages);
+
+    logger(conversationTitle);
 
     const conversations = await this._conversationRepository.create({
       userId: currentUser._id.toString(),
