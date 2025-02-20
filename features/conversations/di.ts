@@ -2,8 +2,9 @@ import { container } from "tsyringe";
 
 import ConversationRoute from "./route";
 import { ConversationController } from "./controller";
-import CreateConversationHandler from "./create-conversation/handler";
 import GetConversationHandler from "./get-conversation/handler";
+import EditConversationHandler from "./edit-conversation/handler";
+import CreateConversationHandler from "./create-conversation/handler";
 
 export const registerConversationsDi = () => {
   container.register<ConversationController>(ConversationController.name, {
@@ -23,5 +24,9 @@ export const registerConversationsDi = () => {
 
   container.register<GetConversationHandler>(GetConversationHandler.name, {
     useClass: GetConversationHandler,
+  });
+
+  container.register<EditConversationHandler>(EditConversationHandler.name, {
+    useClass: EditConversationHandler,
   });
 };
