@@ -24,6 +24,8 @@ export class EnvConfiguration {
   public readonly TWILIO_PHONE_NUMBER = process.env
     .TWILIO_PHONE_NUMBER as string;
   public readonly PINECONE_API_KEY = process.env.PINECONE_API_KEY;
+  public readonly REDIS_HOST = process.env.REDIS_HOST;
+  public readonly REDIS_PORT = parseInt(process.env.REDIS_PORT || "6379");
 }
 
 export const registerEnvConfigDi = () => {

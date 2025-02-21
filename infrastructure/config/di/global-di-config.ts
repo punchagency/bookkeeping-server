@@ -6,6 +6,7 @@ import { registerBankDi } from "../../../features/bank/di";
 import { registerAuthDi } from "../../../features/auth/di/di";
 import { registerOpenAiClientDi } from "../packages/openai/di";
 import { registerMxUserDi } from "../../../features/mx-user/di";
+import { registerRedisServiceDi } from "../../services/redis/di";
 import { registerEnvConfigDi } from "./../../../utils/env-config";
 import { registerPineconeClientDi } from "../packages/pinecone/di";
 import { registerSendgridServiceDi } from "../packages/sendgrid/di";
@@ -18,6 +19,7 @@ import { registerConversationsDi } from "../../../features/conversations/di";
 import { registerSettingsRepositoryDi } from "../../repositories/settings/di";
 import { registerTransactionRepositoryDi } from "../../repositories/transaction/di";
 import { registerConversationRepositoryDi } from "../../repositories/conversations/di";
+
 export default class GlobalDIConfig {
   public static registerAllServices() {
     /**
@@ -62,5 +64,10 @@ export default class GlobalDIConfig {
      */
 
     registerApiResponseDi();
+
+    /**
+     * Infrastructure Services
+     */
+    registerRedisServiceDi();
   }
 }
