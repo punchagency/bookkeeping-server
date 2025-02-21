@@ -5,8 +5,8 @@ import { EnvConfiguration, logger } from "./../../../utils";
 
 @singleton()
 export default class RedisService {
-  private readonly _envConfiguration: EnvConfiguration;
   public readonly client: Redis;
+  private readonly _envConfiguration: EnvConfiguration;
 
   constructor(
     @inject(EnvConfiguration.name) envConfiguration: EnvConfiguration
