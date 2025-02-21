@@ -249,53 +249,7 @@ export default class SessionHandler {
         7. Suggesting budget optimizations
         8. Creating visual representations of financial data
 
-        Spending Analysis:
-        - Highest Single Transaction: $${totals.highestTransaction?.amount.toFixed(
-          2
-        )} (${totals.highestTransaction?.description})
-        - Most Frequent Transactions: ${Object.entries(totals.merchantFrequency)
-          .sort((a, b) => Number(b[1]) - Number(a[1]))
-          .slice(0, 5)
-          .map(([desc, count]) => `${desc} (${count} times)`)
-          .join(", ")}
 
-        Spending by Day of Week:
-        ${Object.entries(spendingTrends.byDayOfWeek)
-          .sort((a, b) => Number(b[1]) - Number(a[1]))
-          .map(([day, amount]) => `- ${day}: $${Number(amount).toFixed(2)}`)
-          .join("\n")}
-        
-        Spending Trends Over Time:
-        ${Object.entries(spendingTrends.monthlySpending)
-          .sort((a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime())
-          .map(([month, amount]) => `- ${month}: $${Number(amount).toFixed(2)}`)
-          .join("\n")}
-        
-        Category Distribution:
-        ${Object.entries(totals.categories)
-          .sort((a, b) => Number(b[1]) - Number(a[1]))
-          .map(
-            ([category, amount]) =>
-              `- ${category}: $${Number(amount).toFixed(2)} (${(
-                (Number(amount) / formattedTotals.expenses) *
-                100
-              ).toFixed(1)}% of expenses)`
-          )
-          .join("\n")}
-        
-        Recent Large Transactions (>=$100):
-        ${spendingTrends.largeTransactions
-          .sort(
-            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-          )
-          .slice(0, 10)
-          .map(
-            (t) =>
-              `- ${t.formattedDate}: ${t.description} - $${t.amount.toFixed(
-                2
-              )} (${t.category})`
-          )
-          .join("\n")}
 
         Monthly Breakdown:
         ${Object.entries(transactionSummary)

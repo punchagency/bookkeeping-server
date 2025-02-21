@@ -23,6 +23,7 @@ export class EnvConfiguration {
   public readonly TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
   public readonly TWILIO_PHONE_NUMBER = process.env
     .TWILIO_PHONE_NUMBER as string;
+  public readonly PINECONE_API_KEY = process.env.PINECONE_API_KEY;
 }
 
 export const registerEnvConfigDi = () => {
