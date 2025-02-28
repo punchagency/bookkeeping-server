@@ -3,6 +3,7 @@ import { container } from "tsyringe";
 import AiRoute from "./route";
 import AiController from "./controller";
 import SessionHandler from "./session/handler";
+import QueryTransactionHandler from "./query-transactions/handler";
 
 export const registerAiDi = () => {
   container.register(SessionHandler.name, {
@@ -15,5 +16,9 @@ export const registerAiDi = () => {
 
   container.register(AiController.name, {
     useClass: AiController,
+  });
+
+  container.register(QueryTransactionHandler.name, {
+    useClass: QueryTransactionHandler,
   });
 };

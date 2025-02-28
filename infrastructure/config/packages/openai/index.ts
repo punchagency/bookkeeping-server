@@ -1,7 +1,10 @@
 import { OpenAI } from "openai";
 import { inject, injectable } from "tsyringe";
 
-import { EnvConfiguration } from "./../../../../utils";
+import {
+  EnvConfiguration,
+  formatTransactionsToMarkdown,
+} from "./../../../../utils";
 import { IMessage } from "./../../../../features/conversations/create-conversation/create-conversation.dto";
 
 @injectable()
@@ -47,5 +50,14 @@ export default class OpenAiClient {
     } catch (error) {
       throw new Error("Failed to parse conversation title response");
     }
+  }
+
+  public async createEmbedding(input: string) {
+    const response = await this.client.embeddings.create({
+      model: "text-embedding-3-small",
+      input: inject.toString(),
+    });
+
+    return response.data[0].embedding;
   }
 }

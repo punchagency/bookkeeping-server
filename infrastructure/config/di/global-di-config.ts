@@ -17,9 +17,9 @@ import { registerTokenRepositoryDi } from "../../repositories/token/di";
 import { registerApiResponseDi } from "../../../application/response/di";
 import { registerConversationsDi } from "../../../features/conversations/di";
 import { registerSettingsRepositoryDi } from "../../repositories/settings/di";
+import { registerTransactionQueueService } from "../../services/transaction/di";
 import { registerTransactionRepositoryDi } from "../../repositories/transaction/di";
 import { registerConversationRepositoryDi } from "../../repositories/conversations/di";
-
 export default class GlobalDIConfig {
   public static registerAllServices() {
     /**
@@ -69,5 +69,6 @@ export default class GlobalDIConfig {
      * Infrastructure Services
      */
     registerRedisServiceDi();
+    registerTransactionQueueService();
   }
 }

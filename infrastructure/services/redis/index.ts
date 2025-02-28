@@ -53,4 +53,8 @@ export default class RedisService {
   async exists(key: string): Promise<boolean> {
     return (await this.client.exists(key)) === 1;
   }
+
+  getRedisConnection() {
+    return this.client;
+  }
 }

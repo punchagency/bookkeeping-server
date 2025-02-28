@@ -20,5 +20,9 @@ export default class AiRoute {
     this.router.post("/session", [useAuth], (req, res) =>
       this._aiController.createSession(req, res)
     );
+
+    this.router.post("/query-transactions", [useAuth], (req, res) =>
+      this._aiController.queryTransactions(req, res)
+    );
   }
 }
