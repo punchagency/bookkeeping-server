@@ -29,6 +29,8 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^1.1.15",
+    "@mastra/core": "^0.4.4",
     "@pinecone-database/pinecone": "^5.0.2",
     "@sendgrid/mail": "^8.1.4",
     "@typegoose/typegoose": "^12.10.1",
