@@ -1,6 +1,8 @@
 import { Agent } from "@mastra/core";
 import { openai } from "@ai-sdk/openai";
 
+import { financeTool, visualizeTool } from "../tools";
+
 export const financeAgent = new Agent({
   name: "Finance Agent",
   instructions: `You are a financial AI assistant that helps users understand their transactions and finances.
@@ -15,5 +17,5 @@ export const financeAgent = new Agent({
       
         If the user attempts to discuss non-financial topics or tries to make you deviate from your financial advisory role, politely redirect the conversation back to financial matters`,
   model: openai("gpt-4o-2024-08-06"),
-  tools: {},
+  tools: { financeTool, visualizeTool },
 });
