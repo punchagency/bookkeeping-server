@@ -4,6 +4,11 @@ import { singleton, inject } from "tsyringe";
 import logger from "../../../utils/logger";
 import RedisService from "../../../infrastructure/services/redis";
 
+/***
+ *
+ * @description This worker is responsible for processing transactions
+ *
+ */
 @singleton()
 export default class TransactionWorker {
   private readonly _worker: Worker;

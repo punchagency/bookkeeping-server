@@ -12,6 +12,10 @@ export class UserRepository
   constructor() {
     super(UserModel);
   }
+  
+  async findQualifiedUsers(): Promise<User[]> {
+    return await UserModel.find({ isVerified: true });
+  }
 
   async findByEmail(email: string): Promise<User | null> {
     return await UserModel.findOne({ email })

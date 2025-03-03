@@ -15,9 +15,13 @@ import { registerUserRepositoryDi } from "../../repositories/user/di";
 import { registerSettingsDi } from "./../../../features/settings/di/di";
 import { registerTokenRepositoryDi } from "../../repositories/token/di";
 import { registerApiResponseDi } from "../../../application/response/di";
+import { registerTransactionWorker } from "../../workers/transaction/di";
 import { registerConversationsDi } from "../../../features/conversations/di";
 import { registerSettingsRepositoryDi } from "../../repositories/settings/di";
-import { registerTransactionQueueService } from "../../services/transaction/di";
+import {
+  registerTransactionQueueService,
+  registerTransactionService,
+} from "../../services/transaction/di";
 import { registerTransactionRepositoryDi } from "../../repositories/transaction/di";
 import { registerConversationRepositoryDi } from "../../repositories/conversations/di";
 export default class GlobalDIConfig {
@@ -69,6 +73,8 @@ export default class GlobalDIConfig {
      * Infrastructure Services
      */
     registerRedisServiceDi();
+    registerTransactionWorker();
     registerTransactionQueueService();
+    registerTransactionService();
   }
 }
