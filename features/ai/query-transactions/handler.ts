@@ -47,7 +47,7 @@ export default class QueryTransactionHandler {
     // const financeAgentResponse = await financeAgent.generate(values.query);
 
     // logger(financeAgentResponse);
-    const response = await axios.post("http://localhost:9000/fiance-agent", {
+    const response = await axios.post("http://localhost:9000/fiance-query", {
       query: values.query,
     });
 
