@@ -1,12 +1,14 @@
-import { Result } from "tsfluent";
+import axios from "axios";
 import { Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
+import { Result, ResultAsync } from "tsfluent";
 
 import { User } from "./../../../domain/entities/user";
 import { queryTransactionsDto } from "./query-transction.dto";
-import OpenAiClient from "./../../../infrastructure/config/packages/openai";
-import RedisService from "./../../../infrastructure/services/redis";
+//import { financeAgent } from "./../../../features/mastra/agents";
 import MxClient from "./../../../infrastructure/config/packages/mx";
+import RedisService from "./../../../infrastructure/services/redis";
+import OpenAiClient from "./../../../infrastructure/config/packages/openai";
 import {
   formatTransactionsToMarkdown,
   logger,
@@ -40,10 +42,19 @@ export default class QueryTransactionHandler {
     const currentUser = req.user as User;
     const values = await queryTransactionsDto.validateAsync(req.body);
 
-    const result = await this.queryTransactions(values.query, currentUser);
+    const result = await ResultAsync.okAsync();
+
+    // const financeAgentResponse = await financeAgent.generate(values.query);
+
+    // logger(financeAgentResponse);
+    const response = await axios.post("http://localhost:9000/fiance-agent", {
+      query: values.query,
+    });
+
+    logger(response.data);
 
     if (result.isSuccess) {
-      return Result.ok(result.value);
+      return Result.ok(response.data.data);
     }
 
     logger(result.errors);

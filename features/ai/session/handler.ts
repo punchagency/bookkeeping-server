@@ -100,28 +100,29 @@ export default class SessionHandler {
                 enum: ["pie", "donut", "bar", "line", "scatter", "area"],
                 description: "The type of chart to create",
               },
-            },
-            data: {
-              type: "array",
-              items: {
-                type: "object",
-                required: ["label", "value"],
-                properties: {
-                  label: { type: "string" },
-                  value: { type: "number" },
-                  category: { type: "string" },
-                  date: { type: "string" },
+
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  required: ["label", "value", "date"],
+                  properties: {
+                    label: { type: "string" },
+                    value: { type: "number" },
+                    date: { type: "string" },
+                  },
                 },
               },
-            },
-            options: {
-              type: "object",
-              required: ["title"],
-              properties: {
-                title: { type: "string" },
-                xAxis: { type: "string" },
-                yAxis: { type: "string" },
-                colors: { type: "array", items: { type: "string" } },
+
+              options: {
+                type: "object",
+                required: ["title", "xAxis", "yAxis", "colors"],
+                properties: {
+                  title: { type: "string" },
+                  xAxis: { type: "string" },
+                  yAxis: { type: "string" },
+                  colors: { type: "array", items: { type: "string" } },
+                },
               },
             },
           },
