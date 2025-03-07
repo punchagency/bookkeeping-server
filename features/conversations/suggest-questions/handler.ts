@@ -105,21 +105,44 @@ export default class SuggestQuestionsHandler {
         Generate questions in this JSON format:
 
         {
-        "categories": [
-            {
-            "name": "string",
-            "description": "string",
-            "questions": [
+            "categories": [
                 {
-                "id": "string",
-                "question": "string",
-                "relevance": number (50-100),
-                "context": "string"
+                    "name": "string",
+                    "description": "string",
+                    "questions": [
+                        {
+                        "id": "string",
+                        "question": "string",
+                        "relevance": number (50-100),
+                        "context": "string"
+                        }
+                    ]
                 }
             ]
-            }
-        ]
         }
+
+        Guidelines for questions:
+        - Write questions from the user's perspective (e.g., "Can you show me..." instead of "Would you like to see...")
+        - Use first-person pronouns (my, I, me) when referring to the user's data
+        - Make questions direct and actionable
+        - Start questions with phrases like:
+        * "Can you show me..."
+        * "How do I..."
+        * "I want to see..."
+        * "Could you help me..."
+        * "Show me..."
+        * "Help me understand..."
+
+        Example transformations:
+        ❌ "What type of chart would you prefer?"
+        ✅ "Can you show me this data in a bar chart instead?"
+
+        ❌ "Would you like to see transaction trends?"
+        ✅ "Show me the trends in my recent transactions"
+
+        ❌ "How should the data be categorized?"
+        ✅ "I want to see my expenses categorized by type"
+
 
         Rules:
         - 3-5 relevant questions per category
