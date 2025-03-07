@@ -24,7 +24,7 @@ export default class GetConversationHandler {
     const currentUser = req.user as User;
 
     const conversations =
-      await this._conversationRepository.findConversationByUserId(
+      await this._conversationRepository.findConversationsByUserId(
         currentUser._id.toString()
       );
 

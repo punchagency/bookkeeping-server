@@ -25,5 +25,9 @@ export default class ConversationRoute {
     this.router.get("/", [useAuth], (req, res) =>
       this._conversationController.getConversations(req, res)
     );
+
+    this.router.get("/:id/suggest-questions", [useAuth], (req, res) =>
+      this._conversationController.suggestQuestions(req, res)
+    );
   }
 }

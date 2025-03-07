@@ -4,14 +4,16 @@ import { inject, injectable } from "tsyringe";
 import GetConversationHandler from "./get-conversation/handler";
 import ApiResponse from "./../../application/response/response";
 import EditConversationHandler from "./edit-conversation/handler";
+import SuggestQuestionsHandler from "./suggest-questions/handler";
 import CreateConversationHandler from "./create-conversation/handler";
 import { IApiResponse } from "./../../application/response/i-response";
 @injectable()
 export class ConversationController {
   private readonly _apiResponse: IApiResponse;
   private readonly _getConversationHandler: GetConversationHandler;
-  private readonly _createConversationHandler: CreateConversationHandler;
   private readonly _editConversationHandler: EditConversationHandler;
+  private readonly _suggestQuestionsHandler: SuggestQuestionsHandler;
+  private readonly _createConversationHandler: CreateConversationHandler;
 
   constructor(
     @inject(ApiResponse) apiResponse: IApiResponse,
@@ -20,12 +22,15 @@ export class ConversationController {
     @inject(GetConversationHandler)
     getConversationHandler: GetConversationHandler,
     @inject(EditConversationHandler)
-    editConversationHandler: EditConversationHandler
+    editConversationHandler: EditConversationHandler,
+    @inject(SuggestQuestionsHandler)
+    suggestQuestionsHandler: SuggestQuestionsHandler
   ) {
     this._apiResponse = apiResponse;
     this._getConversationHandler = getConversationHandler;
-    this._createConversationHandler = createConversationHandler;
     this._editConversationHandler = editConversationHandler;
+    this._suggestQuestionsHandler = suggestQuestionsHandler;
+    this._createConversationHandler = createConversationHandler;
   }
 
   public async createConversation(req: Request, res: Response) {
@@ -76,6 +81,30 @@ export class ConversationController {
     return this._apiResponse.Ok(
       res,
       "Conversation updated successfully",
+      result.value
+    );
+  }
+
+  public async suggestQuestions(req: Request, res: Response) {
+    const result = await this._suggestQuestionsHandler.handle(req, res);
+
+    if (result.isFailure) {
+      const statusCode = result.metadata?.context?.statusCode;
+
+      if (statusCode == 404) {
+        return this._apiResponse.NotFound(
+          res,
+          "Conversation requested was not found",
+          null
+        );
+      } else {
+        return this._apiResponse.BadRequest(res, result.errors);
+      }
+    }
+
+    return this._apiResponse.Ok(
+      res,
+      "Questions suggestions retrieved successfully",
       result.value
     );
   }

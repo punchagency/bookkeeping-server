@@ -16,10 +16,31 @@ export default class ConversationRepository
     super(ConversationModel);
   }
 
-  async findConversationByUserId(
+  /**
+   * Find all user conversations
+   * @param userId
+   * @returns
+   */
+  async findConversationsByUserId(
     userId: string
   ): Promise<Conversation[] | null> {
     return await ConversationModel.find({
+      userId,
+    });
+  }
+
+  /**
+   * Find conversation by user id and conversation id
+   * @param userId
+   * @param conversationId
+   * @returns
+   */
+  async findUserConversation(
+    userId: string,
+    conversationId: string
+  ): Promise<Conversation | null> {
+    return await ConversationModel.findOne({
+      _id: conversationId,
       userId,
     });
   }
