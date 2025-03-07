@@ -93,36 +93,11 @@ export default class SessionHandler {
           description: "Create a visualization of financial data",
           parameters: {
             type: "object",
-            required: ["type", "data", "options"],
+            required: ["query"],
             properties: {
-              type: {
+              query: {
                 type: "string",
-                enum: ["pie", "donut", "bar", "line", "scatter", "area"],
-                description: "The type of chart to create",
-              },
-
-              data: {
-                type: "array",
-                items: {
-                  type: "object",
-                  required: ["label", "value", "date"],
-                  properties: {
-                    label: { type: "string" },
-                    value: { type: "number" },
-                    date: { type: "string" },
-                  },
-                },
-              },
-
-              options: {
-                type: "object",
-                required: ["title", "xAxis", "yAxis", "colors"],
-                properties: {
-                  title: { type: "string" },
-                  xAxis: { type: "string" },
-                  yAxis: { type: "string" },
-                  colors: { type: "array", items: { type: "string" } },
-                },
+                description: "Natural language query about data to visualize",
               },
             },
           },
