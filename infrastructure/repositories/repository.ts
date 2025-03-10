@@ -15,7 +15,7 @@ export class Repository<T> implements IRepository<T> {
   }
 
   async findById(id: Types.ObjectId): Promise<T | null> {
-    return await this.model.findById(id).select("-password +verificationMethod").exec();
+    return await this.model.findById(id).exec();
   }
 
   async findAll(

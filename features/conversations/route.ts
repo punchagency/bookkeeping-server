@@ -33,5 +33,9 @@ export default class ConversationRoute {
     this.router.post("/completions", [useAuth], (req, res) =>
       this._conversationController.getCompletions(req, res)
     );
+
+    this.router.patch("/save-completions", [useAuth], (req, res) =>
+      this._conversationController.saveCompletions(req, res)
+    );
   }
 }

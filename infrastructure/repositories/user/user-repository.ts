@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { injectable } from "tsyringe";
 
 import { Repository } from "../repository";
@@ -12,7 +13,13 @@ export class UserRepository
   constructor() {
     super(UserModel);
   }
-  
+
+  async findById(id: Types.ObjectId): Promise<User | null> {
+    return await UserModel.findById(id)
+      .select("-password +verificationMethod")
+      .exec();
+  }
+
   async findQualifiedUsers(): Promise<User[]> {
     return await UserModel.find({ isVerified: true });
   }

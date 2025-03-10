@@ -4,6 +4,7 @@ import { inject, injectable } from "tsyringe";
 import GetCompletionsHandler from "./get-completions/handler";
 import GetConversationHandler from "./get-conversation/handler";
 import ApiResponse from "./../../application/response/response";
+import SaveCompletionsHandler from "./save-completions/handler";
 import EditConversationHandler from "./edit-conversation/handler";
 import SuggestQuestionsHandler from "./suggest-questions/handler";
 import CreateConversationHandler from "./create-conversation/handler";
@@ -12,15 +13,17 @@ import { IApiResponse } from "./../../application/response/i-response";
 export class ConversationController {
   private readonly _apiResponse: IApiResponse;
   private readonly _getCompletionsHandler: GetCompletionsHandler;
+  private readonly _saveCompletionsHandler: SaveCompletionsHandler;
   private readonly _getConversationHandler: GetConversationHandler;
   private readonly _editConversationHandler: EditConversationHandler;
   private readonly _suggestQuestionsHandler: SuggestQuestionsHandler;
   private readonly _createConversationHandler: CreateConversationHandler;
-
   constructor(
     @inject(ApiResponse) apiResponse: IApiResponse,
     @inject(GetCompletionsHandler)
     getCompletionsHandler: GetCompletionsHandler,
+    @inject(SaveCompletionsHandler)
+    saveCompletionsHandler: SaveCompletionsHandler,
     @inject(CreateConversationHandler)
     createConversationHandler: CreateConversationHandler,
     @inject(GetConversationHandler)
@@ -32,6 +35,7 @@ export class ConversationController {
   ) {
     this._apiResponse = apiResponse;
     this._getCompletionsHandler = getCompletionsHandler;
+    this._saveCompletionsHandler = saveCompletionsHandler;
     this._getConversationHandler = getConversationHandler;
     this._editConversationHandler = editConversationHandler;
     this._suggestQuestionsHandler = suggestQuestionsHandler;
@@ -124,6 +128,36 @@ export class ConversationController {
     return this._apiResponse.Ok(
       res,
       "Completions retrieved successfully",
+      result.value
+    );
+  }
+
+  public async saveCompletions(req: Request, res: Response) {
+    const result = await this._saveCompletionsHandler.handle(req, res);
+
+    if (result.isFailure) {
+      const statusCode = result.metadata?.context?.statusCode;
+
+      if (statusCode == 404) {
+        return this._apiResponse.NotFound(
+          res,
+          "Conversation with given id not found",
+          result.errors
+        );
+      } else if (statusCode == 403) {
+        return this._apiResponse.Forbidden(
+          res,
+          "You are not allowed to save completions for this conversation",
+          result.errors
+        );
+      } else {
+        return this._apiResponse.BadRequest(res, result.errors);
+      }
+    }
+
+    return this._apiResponse.Ok(
+      res,
+      "Completions saved successfully",
       result.value
     );
   }

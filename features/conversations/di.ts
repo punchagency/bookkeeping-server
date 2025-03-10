@@ -4,6 +4,7 @@ import ConversationRoute from "./route";
 import { ConversationController } from "./controller";
 import GetCompletionsHandler from "./get-completions/handler";
 import GetConversationHandler from "./get-conversation/handler";
+import SaveCompletionsHandler from "./save-completions/handler";
 import SuggestQuestionsHandler from "./suggest-questions/handler";
 import EditConversationHandler from "./edit-conversation/handler";
 import CreateConversationHandler from "./create-conversation/handler";
@@ -38,5 +39,9 @@ export const registerConversationsDi = () => {
 
   container.register<GetCompletionsHandler>(GetCompletionsHandler.name, {
     useClass: GetCompletionsHandler,
+  });
+
+  container.register<SaveCompletionsHandler>(SaveCompletionsHandler.name, {
+    useClass: SaveCompletionsHandler,
   });
 };
