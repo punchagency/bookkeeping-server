@@ -44,6 +44,7 @@ export default class GetCompletionsHandler {
           },
         ],
         tools,
+        tool_choice: "auto",
       }
     );
 

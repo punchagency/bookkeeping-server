@@ -3,14 +3,16 @@ export const getOpenaiFinanceTools = () => {
     {
       type: "function",
       name: "query_transactions",
-      description: "Query user transactions based on natural language input",
+      description:
+        "Retrieve user transactions based on a natural language request. This tool allows users to search for transactions by date, category, amount, or specific keywords.",
       parameters: {
         type: "object",
         required: ["query"],
         properties: {
           query: {
             type: "string",
-            description: "Natural language query about transactions",
+            description:
+              "A natural language query specifying the transactions to retrieve.",
           },
         },
       },
@@ -19,14 +21,16 @@ export const getOpenaiFinanceTools = () => {
     {
       type: "function",
       name: "create_visualization",
-      description: "Create a visualization of financial data",
+      description:
+        "Generate a financial data visualization based on user input. This tool supports visualizing spending trends, income vs. expenses, and transaction breakdowns.",
       parameters: {
         type: "object",
         required: ["query"],
         properties: {
           query: {
             type: "string",
-            description: "Natural language query about data to visualize",
+            description:
+              "A natural language query describing the financial data to visualize.",
           },
         },
       },

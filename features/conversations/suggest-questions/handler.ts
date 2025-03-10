@@ -125,13 +125,13 @@ export default class SuggestQuestionsHandler {
 
   private async generatePrompt(conversation: IPromptConversation[]) {
     return `
-        Analyze the following conversation and generate follow-up questions:
+        Analyze the following conversation and generate structured, query-friendly follow-up questions:
 
         [CONVERSATION]
         ${conversation.map((c) => `${c.role}: ${c.content}`).join("\n")}
         [/CONVERSATION]
 
-        Generate questions in this JSON format:
+        Format the response as a valid JSON object:
 
         {
             "categories": [
@@ -140,45 +140,45 @@ export default class SuggestQuestionsHandler {
                     "description": "string",
                     "questions": [
                         {
-                        "id": "string",
-                        "question": "string",
-                        "relevance": number (50-100),
-                        "context": "string"
+                            "id": "string",
+                            "question": "string",
+                            "relevance": number (50-100),
+                            "context": "string"
                         }
                     ]
                 }
             ]
         }
 
-        Guidelines for questions:
-        - Write questions from the user's perspective (e.g., "Can you show me..." instead of "Would you like to see...")
-        - Use first-person pronouns (my, I, me) when referring to the user's data
-        - Make questions direct and actionable
-        - Start questions with phrases like:
-        * "Can you show me..."
-        * "How do I..."
-        * "I want to see..."
-        * "Could you help me..."
-        * "Show me..."
-        * "Help me understand..."
+        **Guidelines for Generating Questions:**
+        - Questions should be concise, direct, and easily searchable.
+        - Use clear, action-oriented phrasing (e.g., "Show me...", "How do I...", "Can you explain...").
+        - Structure questions to be user-friendly and relevant to the context.
+        - Avoid ambiguity—each question should have a clear intent.
+        - Start questions with:
+            * "Show me..."
+            * "How do I..."
+            * "Can you explain..."
+            * "Give me insights on..."
+            * "Help me analyze..."
+            * "What are the key details of..."
 
-        Example transformations:
-        ❌ "What type of chart would you prefer?"
-        ✅ "Can you show me this data in a bar chart instead?"
+        **Example Transformations:**
+        ❌ "Would you like insights on your spending?"  
+        ✅ "Show me insights on my recent spending"  
 
-        ❌ "Would you like to see transaction trends?"
-        ✅ "Show me the trends in my recent transactions"
+        ❌ "How do you want the report?"  
+        ✅ "How do I generate a detailed expense report?"  
 
-        ❌ "How should the data be categorized?"
-        ✅ "I want to see my expenses categorized by type"
+        ❌ "Do you need help with your transactions?"  
+        ✅ "Help me analyze my latest transactions"  
 
-
-        Rules:
-        - 3-5 relevant questions per category
-        - Max 6 categories
-        - Questions must be specific and actionable
-        - Return valid JSON only
-        `;
+        **Rules:**
+        - Generate 3-5 highly relevant questions per category.
+        - Max 6 categories to maintain focus.
+        - Ensure questions align with past conversation context.
+        - Return **valid JSON only**.
+    `;
   }
 
   private async getCachedQuestions(conversationId: string) {
