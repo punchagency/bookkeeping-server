@@ -7,6 +7,7 @@ import GetConversationHandler from "./get-conversation/handler";
 import SaveCompletionsHandler from "./save-completions/handler";
 import SuggestQuestionsHandler from "./suggest-questions/handler";
 import EditConversationHandler from "./edit-conversation/handler";
+import DeleteConversationHandler from "./delete-conversation/handler";
 import CreateConversationHandler from "./create-conversation/handler";
 
 export const registerConversationsDi = () => {
@@ -44,4 +45,11 @@ export const registerConversationsDi = () => {
   container.register<SaveCompletionsHandler>(SaveCompletionsHandler.name, {
     useClass: SaveCompletionsHandler,
   });
+
+  container.register<DeleteConversationHandler>(
+    DeleteConversationHandler.name,
+    {
+      useClass: DeleteConversationHandler,
+    }
+  );
 };

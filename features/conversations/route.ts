@@ -37,5 +37,13 @@ export default class ConversationRoute {
     this.router.patch("/save-completions", [useAuth], (req, res) =>
       this._conversationController.saveCompletions(req, res)
     );
+
+    this.router.patch("/:id", [useAuth], (req, res) =>
+      this._conversationController.editConversation(req, res)
+    );
+
+    this.router.delete("/:id", [useAuth], (req, res) =>
+      this._conversationController.deleteConversation(req, res)
+    );
   }
 }

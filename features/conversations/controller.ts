@@ -8,6 +8,7 @@ import SaveCompletionsHandler from "./save-completions/handler";
 import EditConversationHandler from "./edit-conversation/handler";
 import SuggestQuestionsHandler from "./suggest-questions/handler";
 import CreateConversationHandler from "./create-conversation/handler";
+import DeleteConversationHandler from "./delete-conversation/handler";
 import { IApiResponse } from "./../../application/response/i-response";
 @injectable()
 export class ConversationController {
@@ -18,6 +19,8 @@ export class ConversationController {
   private readonly _editConversationHandler: EditConversationHandler;
   private readonly _suggestQuestionsHandler: SuggestQuestionsHandler;
   private readonly _createConversationHandler: CreateConversationHandler;
+  private readonly _deleteConversationHandler: DeleteConversationHandler;
+
   constructor(
     @inject(ApiResponse) apiResponse: IApiResponse,
     @inject(GetCompletionsHandler)
@@ -31,7 +34,9 @@ export class ConversationController {
     @inject(EditConversationHandler)
     editConversationHandler: EditConversationHandler,
     @inject(SuggestQuestionsHandler)
-    suggestQuestionsHandler: SuggestQuestionsHandler
+    suggestQuestionsHandler: SuggestQuestionsHandler,
+    @inject(DeleteConversationHandler)
+    deleteConversationHandler: DeleteConversationHandler
   ) {
     this._apiResponse = apiResponse;
     this._getCompletionsHandler = getCompletionsHandler;
@@ -40,6 +45,7 @@ export class ConversationController {
     this._editConversationHandler = editConversationHandler;
     this._suggestQuestionsHandler = suggestQuestionsHandler;
     this._createConversationHandler = createConversationHandler;
+    this._deleteConversationHandler = deleteConversationHandler;
   }
 
   public async createConversation(req: Request, res: Response) {
@@ -158,6 +164,39 @@ export class ConversationController {
     return this._apiResponse.Ok(
       res,
       "Completions saved successfully",
+      result.value
+    );
+  }
+
+  public async deleteConversation(req: Request, res: Response) {
+    const result = await this._deleteConversationHandler.handle(req, res);
+
+    if (result.isFailure) {
+      const statusCode = result.metadata.context?.statusCode;
+
+      switch (statusCode) {
+        case 404:
+          return this._apiResponse.NotFound(
+            res,
+            "Conversation with given id not found",
+            result.errors
+          );
+
+        case 403:
+          return this._apiResponse.Forbidden(
+            res,
+            "You are not allowed to delete this conversation",
+            result.errors
+          );
+
+        default:
+          return this._apiResponse.BadRequest(res, result.errors);
+      }
+    }
+
+    return this._apiResponse.Ok(
+      res,
+      "Conversation deleted successfully",
       result.value
     );
   }
