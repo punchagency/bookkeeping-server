@@ -125,60 +125,61 @@ export default class SuggestQuestionsHandler {
 
   private async generatePrompt(conversation: IPromptConversation[]) {
     return `
-        Analyze the following conversation and generate structured, query-friendly follow-up questions:
+      Analyze the following conversation and generate follow-up questions **only within the financial domain**.
 
-        [CONVERSATION]
-        ${conversation.map((c) => `${c.role}: ${c.content}`).join("\n")}
-        [/CONVERSATION]
+      [CONVERSATION]
+      ${conversation.map((c) => `${c.role}: ${c.content}`).join("\n")}
+      [/CONVERSATION]
 
-        Format the response as a valid JSON object:
+      Generate questions in this JSON format:
 
-        {
-            "categories": [
-                {
-                    "name": "string",
-                    "description": "string",
-                    "questions": [
-                        {
-                            "id": "string",
-                            "question": "string",
-                            "relevance": number (50-100),
-                            "context": "string"
-                        }
-                    ]
-                }
-            ]
-        }
+      {
+          "categories": [
+              {
+                  "name": "string",
+                  "description": "string",
+                  "questions": [
+                      {
+                          "id": "string",
+                          "question": "string",
+                          "relevance": number (50-100),
+                          "context": "string"
+                      }
+                  ]
+              }
+          ]
+      }
 
-        **Guidelines for Generating Questions:**
-        - Questions should be concise, direct, and easily searchable.
-        - Use clear, action-oriented phrasing (e.g., "Show me...", "How do I...", "Can you explain...").
-        - Structure questions to be user-friendly and relevant to the context.
-        - Avoid ambiguity—each question should have a clear intent.
-        - Start questions with:
-            * "Show me..."
-            * "How do I..."
-            * "Can you explain..."
-            * "Give me insights on..."
-            * "Help me analyze..."
-            * "What are the key details of..."
+      **Guidelines for Generating Questions:**
+      - Only generate questions relevant to these two financial domains:
+        1. **Querying Transactions** (e.g., filtering transactions by date, amount, category).
+        2. **Data Visualizations** (e.g., representing financial data in charts).
+      
+      - Do **not** generate questions outside these topics.
+      - Write questions in a user-friendly and query-friendly way.
+      - Ensure questions match the financial intent of the conversation.
 
-        **Example Transformations:**
-        ❌ "Would you like insights on your spending?"  
-        ✅ "Show me insights on my recent spending"  
+      **Example Questions (Good vs. Bad):**
 
-        ❌ "How do you want the report?"  
-        ✅ "How do I generate a detailed expense report?"  
+      ✅ **Good (Relevant to Transactions & Data Visualization)**  
+      - "Can you show me my expenses for the last 3 months?"  
+      - "How much have I spent on groceries this year?"  
+      - "Visualize my spending habits as a pie chart."  
+      - "Show my highest transaction in February."  
+      - "Compare my income and expenses in a bar chart."  
 
-        ❌ "Do you need help with your transactions?"  
-        ✅ "Help me analyze my latest transactions"  
+      ❌ **Bad (Not Related to Finance)**  
+      - "Can you repeat that?" ❌ *(Not financial-related)*  
+      - "What do you mean by that?" ❌ *(General conversation question)*  
+      - "How does AI understand my messages?" ❌ *(Not useful for finance queries)*  
+      - "Can you tell me about the weather?" ❌ *(Not financial-related)*  
 
-        **Rules:**
-        - Generate 3-5 highly relevant questions per category.
-        - Max 6 categories to maintain focus.
-        - Ensure questions align with past conversation context.
-        - Return **valid JSON only**.
-    `;
+      **Rules for Output:**
+      - 3-5 highly relevant questions per category.
+      - Maximum of 6 categories.
+      - Questions must be **clear, specific, and directly related to transactions or financial data visualization**.
+      - Return **valid JSON only**.
+  `;
   }
 
   private async getCachedQuestions(conversationId: string) {
