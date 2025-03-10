@@ -2,6 +2,7 @@ import { container } from "tsyringe";
 
 import ConversationRoute from "./route";
 import { ConversationController } from "./controller";
+import GetCompletionsHandler from "./get-completions/handler";
 import GetConversationHandler from "./get-conversation/handler";
 import SuggestQuestionsHandler from "./suggest-questions/handler";
 import EditConversationHandler from "./edit-conversation/handler";
@@ -33,5 +34,9 @@ export const registerConversationsDi = () => {
 
   container.register<SuggestQuestionsHandler>(SuggestQuestionsHandler.name, {
     useClass: SuggestQuestionsHandler,
+  });
+
+  container.register<GetCompletionsHandler>(GetCompletionsHandler.name, {
+    useClass: GetCompletionsHandler,
   });
 };

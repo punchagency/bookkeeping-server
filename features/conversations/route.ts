@@ -29,5 +29,9 @@ export default class ConversationRoute {
     this.router.get("/:id/suggest-questions", [useAuth], (req, res) =>
       this._conversationController.suggestQuestions(req, res)
     );
+
+    this.router.post("/completions", [useAuth], (req, res) =>
+      this._conversationController.getCompletions(req, res)
+    );
   }
 }

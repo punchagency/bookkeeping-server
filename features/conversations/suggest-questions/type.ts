@@ -6,3 +6,16 @@ export interface IPromptConversation
 export interface IResultMetadataContext {
   statusCode: number;
 }
+
+export interface IQuestionSuggestion {
+  name: string;
+  description: string;
+  questions: IQuestion[];
+}
+
+export interface IQuestion {
+  id: string;
+  question: string;
+  relevance: number;
+  context: string;
+}

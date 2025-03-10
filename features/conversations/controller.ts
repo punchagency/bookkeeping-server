@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
 
+import GetCompletionsHandler from "./get-completions/handler";
 import GetConversationHandler from "./get-conversation/handler";
 import ApiResponse from "./../../application/response/response";
 import EditConversationHandler from "./edit-conversation/handler";
@@ -10,6 +11,7 @@ import { IApiResponse } from "./../../application/response/i-response";
 @injectable()
 export class ConversationController {
   private readonly _apiResponse: IApiResponse;
+  private readonly _getCompletionsHandler: GetCompletionsHandler;
   private readonly _getConversationHandler: GetConversationHandler;
   private readonly _editConversationHandler: EditConversationHandler;
   private readonly _suggestQuestionsHandler: SuggestQuestionsHandler;
@@ -17,6 +19,8 @@ export class ConversationController {
 
   constructor(
     @inject(ApiResponse) apiResponse: IApiResponse,
+    @inject(GetCompletionsHandler)
+    getCompletionsHandler: GetCompletionsHandler,
     @inject(CreateConversationHandler)
     createConversationHandler: CreateConversationHandler,
     @inject(GetConversationHandler)
@@ -27,6 +31,7 @@ export class ConversationController {
     suggestQuestionsHandler: SuggestQuestionsHandler
   ) {
     this._apiResponse = apiResponse;
+    this._getCompletionsHandler = getCompletionsHandler;
     this._getConversationHandler = getConversationHandler;
     this._editConversationHandler = editConversationHandler;
     this._suggestQuestionsHandler = suggestQuestionsHandler;
@@ -105,6 +110,20 @@ export class ConversationController {
     return this._apiResponse.Ok(
       res,
       "Questions suggestions retrieved successfully",
+      result.value
+    );
+  }
+
+  public async getCompletions(req: Request, res: Response) {
+    const result = await this._getCompletionsHandler.handle(req, res);
+
+    if (result.isFailure) {
+      return this._apiResponse.BadRequest(res, result.errors);
+    }
+
+    return this._apiResponse.Ok(
+      res,
+      "Completions retrieved successfully",
       result.value
     );
   }

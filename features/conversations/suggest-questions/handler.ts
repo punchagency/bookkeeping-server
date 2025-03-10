@@ -9,17 +9,24 @@ import { logger } from "./../../../utils";
 import { User } from "../../../domain/entities/user";
 import { suggestQuestionsSchema } from "./suggest-questions.dto";
 import { Message } from "../../../domain/entities/conversations";
-import { IPromptConversation, IResultMetadataContext } from "./type";
+import RedisService from "./../../../infrastructure/services/redis";
+import {
+  IPromptConversation,
+  IQuestionSuggestion,
+  IResultMetadataContext,
+} from "./type";
 import ConversationRepository from "./../../../infrastructure/repositories/conversations/conversation-repository";
 
 @injectable()
 export default class SuggestQuestionsHandler {
+  private readonly _redisService: RedisService;
   private readonly _conversationRepository: ConversationRepository;
-
   constructor(
+    @inject(RedisService) redisService: RedisService,
     @inject(ConversationRepository)
     conversationRepository: ConversationRepository
   ) {
+    this._redisService = redisService;
     this._conversationRepository = conversationRepository;
   }
 
@@ -43,7 +50,10 @@ export default class SuggestQuestionsHandler {
       });
     }
 
-    const questionsResult = await this.suggestQuestions(conversations.messages);
+    const questionsResult = await this.suggestQuestions(
+      conversations._id.toString(),
+      conversations.messages
+    );
 
     if (!questionsResult.isSuccess) {
       return Result.fail("Failed to suggest questions");
@@ -52,7 +62,21 @@ export default class SuggestQuestionsHandler {
     return Result.ok(questionsResult.value);
   }
 
-  private async suggestQuestions(conversations: Message[]) {
+  private async suggestQuestions(
+    conversationId: string,
+    conversations: Message[]
+  ) {
+    const cachedQuestions = await this.getCachedQuestions(conversationId);
+
+    if (cachedQuestions) {
+      logger(`Returning cached questions for conversation ${conversationId}`);
+      return Result.ok(cachedQuestions);
+    }
+
+    logger(`Cached questions not found for conversation ${conversationId}`);
+
+    logger(`Generating questions for conversation ${conversationId}`);
+
     const conversationsWithoutTimestamp = conversations.map((c) => ({
       role: c.role,
       content: c.content,
@@ -91,7 +115,12 @@ export default class SuggestQuestionsHandler {
 
     const categories = suggestionsParams.object.categories;
 
-    return Result.ok(categories);
+    await this.setCachedQuestions(
+      conversationId,
+      categories as IQuestionSuggestion[]
+    );
+
+    return Result.ok(categories as IQuestionSuggestion[]);
   }
 
   private async generatePrompt(conversation: IPromptConversation[]) {
@@ -150,5 +179,26 @@ export default class SuggestQuestionsHandler {
         - Questions must be specific and actionable
         - Return valid JSON only
         `;
+  }
+
+  private async getCachedQuestions(conversationId: string) {
+    logger(`Getting cached questions for conversation ${conversationId}`);
+    const cachedQuestions = await this._redisService.get(
+      `conversation:${conversationId}:questions`
+    );
+
+    return cachedQuestions as IQuestionSuggestion[];
+  }
+
+  private async setCachedQuestions(
+    conversationId: string,
+    questions: IQuestionSuggestion[]
+  ) {
+    logger(`Caching questions for conversation ${conversationId}`);
+    await this._redisService.set(
+      `conversation:${conversationId}:questions`,
+      questions,
+      60 * 60 // /1 hour
+    );
   }
 }

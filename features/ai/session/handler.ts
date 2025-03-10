@@ -1,10 +1,15 @@
-import axios from "axios";
+import axios, { get } from "axios";
 import { Result } from "tsfluent";
 import { Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
 
 import { User } from "./../../../domain/entities/user";
-import { EnvConfiguration, logger } from "./../../../utils";
+import {
+  EnvConfiguration,
+  logger,
+  getOpenaiFinanceTools,
+  getOpenaiFinanceAgentPrompt,
+} from "./../../../utils";
 import MxClient from "./../../../infrastructure/config/packages/mx";
 import RedisService from "./../../../infrastructure/services/redis";
 import PineconeClient from "./../../../infrastructure/config/packages/pinecone";
@@ -69,52 +74,9 @@ export default class SessionHandler {
 
   private async createSession(req: Request, aiVoice: string) {
     try {
-      const tools = [
-        {
-          type: "function",
-          name: "query_transactions",
-          description:
-            "Query user transactions based on natural language input",
-          parameters: {
-            type: "object",
-            required: ["query"],
-            properties: {
-              query: {
-                type: "string",
-                description: "Natural language query about transactions",
-              },
-            },
-          },
-        },
+      const tools = getOpenaiFinanceTools();
 
-        {
-          type: "function",
-          name: "create_visualization",
-          description: "Create a visualization of financial data",
-          parameters: {
-            type: "object",
-            required: ["query"],
-            properties: {
-              query: {
-                type: "string",
-                description: "Natural language query about data to visualize",
-              },
-            },
-          },
-        },
-      ];
-
-      const systemPrompt =
-        `You are a financial AI assistant that helps users understand their transactions and finances.
-        When users ask about their transactions, use the query_transactions function to fetch relevant data.
-        Use the create_visualization function to create charts and graphs when users want to visualize their financial data.
-        Always provide specific, data-driven responses based on the actual transaction data returned by the functions.
-        Try to make your responses as brief and concise as possible.
-      
-        If the user attempts to discuss non-financial topics or tries to make you deviate from your financial advisory role, politely redirect the conversation back to financial matters.
-        `.trim();
-
-      logger(systemPrompt);
+      const systemPrompt = getOpenaiFinanceAgentPrompt();
 
       const response = await axios.post(
         "https://api.openai.com/v1/realtime/sessions",
