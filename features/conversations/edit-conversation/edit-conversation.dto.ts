@@ -3,7 +3,6 @@ import { Types } from "mongoose";
 
 export const editConversationSchema = Joi.object({
   title: Joi.string().required(),
-  conversationId: Joi.string().required(),
 });
 
 export interface IEditConversationDto {

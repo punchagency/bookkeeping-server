@@ -2,6 +2,7 @@ import { Result } from "tsfluent";
 import { Request, Response } from "express";
 import { injectable, inject } from "tsyringe";
 
+import { logger } from "./../../../utils";
 import { User } from "../../../domain/entities/user";
 import {
   IEditConversationDto,
@@ -23,7 +24,12 @@ export default class EditConversationHandler {
   public async handle(req: Request, res: Response) {
     const values = await editConversationSchema.validateAsync(req.body);
 
-    return this.editConversation(values as IEditConversationDto, req);
+    const dataToSend = {
+      ...values,
+      conversationId: req.params.id,
+    };
+
+    return this.editConversation(dataToSend as IEditConversationDto, req);
   }
 
   private async editConversation(data: IEditConversationDto, req: Request) {
